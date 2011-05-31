@@ -36,8 +36,7 @@ $(TARGET): $(TARGET).o
 	$(LD) $(EXTRALDFLAGS) -o $(TARGET) $(TARGET).o $(LIBS) $(EXTRALDLIBS)
 
 test: ./$(TARGET)
-	./$(TARGET) > $(TARGET).rst
-
+	./$(TARGET)
 
 clean:
 	-rm $(TARGET).o $(TARGET)
