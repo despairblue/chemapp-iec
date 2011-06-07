@@ -40,6 +40,7 @@ int main (int argc, char const *argv[])
 	     noerr,              // error code return variable
 	     nphase,             // number of phases in the loaded data-file
 	     npcgas,             // number of phase constituents in the gas phase
+	     numcon,             // index of a condition set
 	     unitno,             // FORTRAN unit number of the data-files
 	     errorunit;          // FORTRAN unit number for error messages
 
@@ -69,6 +70,44 @@ int main (int argc, char const *argv[])
 	
 	// Initialise ChemApp
 	tqini(&noerr);
+	
+	// Getting the FORTRAN unit for the data-file
+	tqgio("FILE", &unitno, &noerr);
+	
+	// Open data-file for reading
+	tqopna("cosi.dat", unitno, &noerr);
+	
+	// Read data-file
+	tqrfil(&noerr);
+	
+	// Close data-file
+	tqclos(unitno, &noerr);
+	
+	// get number of phases
+	tqnop(&nphase, &noerr);
+	printf("Number of phases: %li\n", nphase);
+	
+	// Set equilibrium conditions
+	tqsetc("ia ", 1, 4, 1.0, &numcon, &noerr);
+	
+	// Display present settings
+	printf("\n\nCurrently active conditions:\n");
+  printf("\n\n**** Begin output table produced by tqshow\n");
+  fflush(NULL);
+  tqshow(&noerr);
+  fflush(NULL);
+  printf("\n**** End output table produced by tqshow\n\n\n");
+	
+	// Calcualte equilibrium
+	darray2[0] = 0.0;
+	tqce(" ", 0, 0, darray2, &noerr);
+	
+	// Print ChemSage output table
+	printf("\n\n**** Begin output table produced by tqcenl\n");
+  fflush(NULL);
+  tqcenl(" ",0,0,darray2,&noerr); 
+  fflush(NULL);
+  printf("\n**** End output table produced by tqcenl\n\n\n");
 	
 	return 0;
 }
