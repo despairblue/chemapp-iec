@@ -58,13 +58,13 @@ int main (int argc, char const *argv[])
 	     mname[TQSTRLEN],     // mixture model names
 	     newsc[4][TQSTRLEN];  // 4 string array for tqcsc
 
-	int i;                    // all-purpose variable
+	int i, j;                 // all-purpose variables
 	
 	/*
 		Initializing and Stuff
 	*/
 	
-	printf("\nProgram for accelerating the equilibrium calculations\n\n");
+	// printf("\nProgram for accelerating the equilibrium calculations\n\n");
 
 	dstrptr = malloc(TQSTRLEN);
 	
@@ -85,34 +85,35 @@ int main (int argc, char const *argv[])
 	
 	// get number of phases
 	tqnop(&nphase, &noerr);
-	printf("Number of phases: %li\n", nphase);
+	// printf("Number of phases: %li\n", nphase);
 	
 	// Set equilibrium conditions
-	// tqsetc("ia ", 1, 4, 1.0, &numcon, &noerr);
-	for(size_t i = 0; i < 2000; ++i)
+	tqsetc("ia ", 1, 4, 1.0, &numcon, &noerr);
+	for(i = 1; i <= 100; ++i)
 	{
-		tqsetc("T", 0, 0, 0.0, &numcon, &noerr);
+		tqsetc("T", 0, 0, i, &numcon, &noerr);
 		
-		for(size_t i = 0; i < 100; ++i)
+		for(j = 1; j <= 200; ++j)
 		{
+			tqsetc("P", 0, 0, j, &numcon, &noerr);
 			// Display present settings
-			printf("\n\nCurrently active conditions:\n");
-		  printf("\n\n**** Begin output table produced by tqshow\n");
-		  fflush(NULL);
-		  tqshow(&noerr);
-		  fflush(NULL);
-		  printf("\n**** End output table produced by tqshow\n\n\n");
+			// printf("\n\nCurrently active conditions:\n");
+			// printf("\n\n**** Begin output table produced by tqshow\n");
+			// fflush(NULL);
+			// tqshow(&noerr);
+			// fflush(NULL);
+			// printf("\n**** End output table produced by tqshow\n\n\n");
 
 			// Calcualte equilibrium
 			darray2[0] = 0.0;
 			tqce(" ", 0, 0, darray2, &noerr);
 
 			// Print ChemSage output table
-			printf("\n\n**** Begin output table produced by tqcenl\n");
-		  fflush(NULL);
-		  tqcenl(" ",0,0,darray2,&noerr); 
-		  fflush(NULL);
-		  printf("\n**** End output table produced by tqcenl\n\n\n");
+			// printf("\n\n**** Begin output table produced by tqcenl\n");
+			// 		  fflush(NULL);
+			// 		  tqcenl(" ",0,0,darray2,&noerr); 
+			// 		  fflush(NULL);
+			// 		  printf("\n**** End output table produced by tqcenl\n\n\n");
 		}
 	}
 	

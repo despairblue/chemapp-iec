@@ -36,6 +36,7 @@ $(TARGET): $(TARGET).o
 	$(LD) $(EXTRALDFLAGS) -o $(TARGET) $(TARGET).o $(LIBS) $(EXTRALDLIBS)
 
 test: ./$(TARGET)
+	clear
 	./$(TARGET)
 
 clean:
