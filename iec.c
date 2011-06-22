@@ -38,6 +38,68 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f)
 	*f = 0;
 }
 
+void run_iteration(int t_min, int t_max, int p_min, int p_max, LI *time_taken, LI *numcon, DB darray2[2], LI *noerr)
+{
+	//TODO: 2 Structs übergeben lassen anstatt tausender vars
+	int now, then, i, j;
+	DB db1, c_all, c_mean, o_all, o_mean, si_all, si_mean;
+	char dstr2[TQSTRLEN];
+	
+	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
+	
+	now = time(NULL);
+	for(i = t_min; i <= t_max; ++i)
+	{
+		tqsetc("T", 0, 0, i, numcon, noerr);
+		
+		for(j = p_min; j <= p_max; ++j)
+		{
+			tqsetc("P", 0, 0, j, numcon, noerr);
+			// Display present settings
+			// printf("\n\nCurrently active conditions:\n");
+			// printf("\n\n**** Begin output table produced by tqshow\n");
+			// fflush(NULL);
+			// tqshow(&noerr);
+			// fflush(NULL);
+			// printf("\n**** End output table produced by tqshow\n\n\n");
+
+			// Calcualte equilibrium
+			darray2[0] = 0.0;
+			tqcen(" ", 0, 0, darray2, noerr);
+			tqgnsc(1, dstr2, noerr);
+			tqgetr("XP", 1, 1, &db1, noerr);
+			// printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
+			c_all += db1;
+			c_mean += 1;
+			
+			tqgetr("XP", 2, 1, &db1, noerr);
+			o_all += db1;
+			o_mean += 1;
+			
+			tqgetr("XP", 3, 1, &db1, noerr);
+			si_all += db1;
+			si_mean += 1;
+
+			// Print ChemSage output table
+			// printf("\n\n**** Begin output table produced by tqcenl\n");
+			// 		  fflush(NULL);
+			// 		  tqcenl(" ",0,0,darray2,&noerr); 
+			// 		  fflush(NULL);
+			// 		  printf("\n**** End output table produced by tqcenl\n\n\n");
+		}
+	}
+	then = time(NULL);
+	
+	printf("Mean mole fraction of C in the GAS phase %f\n", c_all / c_mean);
+	printf("Existence of C: %f\n\n", c_all);
+	printf("Mean mole fraction of O in the GAS phase %f\n", o_all / o_mean);
+	printf("Existence of O: %f\n\n", o_all);
+	printf("Mean mole fraction of Si in the GAS phase %f\n", si_all / si_mean);
+	printf("Existence of Si: %f\n\n", si_all);
+	
+	*time_taken = then - now;
+}
+
 int main (int argc, char const *argv[])
 {
 	/*
@@ -56,7 +118,7 @@ int main (int argc, char const *argv[])
 	     unitno,             // FORTRAN unit number of the data-files
 	     errorunit;          // FORTRAN unit number for error messages
 
-	DB   d1,                 // all-purpose real variable
+	DB   db1,                 // all-purpose real variable
 	     darray2[2],         // all-purpose 2 var array
 	     darray30[30],       // all-purpose 30 var array
 	     c_all, c_mean,
@@ -112,141 +174,44 @@ int main (int argc, char const *argv[])
 	
 	// start iteration with all components
 	puts("********************************************");
-	printf("Start calculation with all components.\n");
-	puts("********************************************");
+	puts("   Start calculation with all components.");
+	puts("********************************************\n");
 	
 	tqce(" ", 0, 0, darray2, &noerr);
 	
 	tqgnsc(1, dstr2, &noerr);
-	tqgetr("XP", 1, 1, &d1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, d1);
+	tqgetr("XP", 1, 1, &db1, &noerr);
+	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
 	
 	tqgnsc(2, dstr2, &noerr);
-	tqgetr("XP", 2, 1, &d1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, d1);
+	tqgetr("XP", 2, 1, &db1, &noerr);
+	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
 	
 	tqgnsc(3, dstr2, &noerr);
-	tqgetr("XP", 3, 1, &d1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, d1);
+	tqgetr("XP", 3, 1, &db1, &noerr);
+	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
 	
-	tqcel(" ", 0, 0, darray2, &noerr);
+	tqce(" ", 0, 0, darray2, &noerr);
 	
-	now = time(NULL);
-	for(i = 1000; i <= 1100; ++i)
-	{
-		tqsetc("T", 0, 0, i, &numcon, &noerr);
-		
-		for(j = 1; j <= 20; ++j)
-		{
-			tqsetc("P", 0, 0, j, &numcon, &noerr);
-			// Display present settings
-			// printf("\n\nCurrently active conditions:\n");
-			// printf("\n\n**** Begin output table produced by tqshow\n");
-			// fflush(NULL);
-			// tqshow(&noerr);
-			// fflush(NULL);
-			// printf("\n**** End output table produced by tqshow\n\n\n");
-
-			// Calcualte equilibrium
-			darray2[0] = 0.0;
-			tqcen(" ", 0, 0, darray2, &noerr);
-			tqgnsc(1, dstr2, &noerr);
-			tqgetr("XP", 1, 1, &d1, &noerr);
-			// printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, d1);
-			c_all += d1;
-			c_mean += 1;
-			
-			tqgetr("XP", 2, 1, &d1, &noerr);
-			o_all += d1;
-			o_mean += 1;
-			
-			tqgetr("XP", 3, 1, &d1, &noerr);
-			si_all += d1;
-			si_mean += 1;
-
-			// Print ChemSage output table
-			// printf("\n\n**** Begin output table produced by tqcenl\n");
-			// 		  fflush(NULL);
-			// 		  tqcenl(" ",0,0,darray2,&noerr); 
-			// 		  fflush(NULL);
-			// 		  printf("\n**** End output table produced by tqcenl\n\n\n");
-		}
-	}
-	then = time(NULL);
-	
-	printf("Time: %li\n\n", then - now);
-	printf("Mean mole fraction of C in the GAS phase %f\n", c_all / c_mean);
-	printf("Existence of C: %f\n\n", c_all);
-	printf("Mean mole fraction of O in the GAS phase %f\n", o_all / o_mean);
-	printf("Existence of O: %f\n\n", o_all);
-	printf("Mean mole fraction of Si in the GAS phase %f\n", si_all / si_mean);
-	printf("Existence of Si: %f\n\n", si_all);
+	run_iteration(1000, 1100, 1, 20, &now, &numcon, darray2, &noerr);
+	printf("Time: %li\n___________________________\n\n", now);
 
 	// start iteration without Si
-	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
 	puts("********************************************");
-	printf("Start calculation without some Phases.\n");
-	puts("********************************************");
+	puts("   Start calculation without some Phases.");
+	puts("********************************************\n");
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
-	tqcsp(4, "eliminated", &noerr);
-	tqcsp(5, "eliminated", &noerr);
-	tqcsp(6, "eliminated", &noerr);
+	// tqcsp(5, "eliminated", &noerr);
+	// tqcsp(6, "eliminated", &noerr);
 	tqcsp(7, "eliminated", &noerr);
+	tqcsp(8, "eliminated", &noerr);
 	// tqcspc(3, 1, "eliminated", &noerr);
 	// tqcsp(2, "DORMANT", &noerr);
-	tqcel(" ", 0, 0, darray2, &noerr);
+	tqce(" ", 0, 0, darray2, &noerr);
 	
-	now = time(NULL);
-	for(i = 1000; i <= 1100; ++i)
-	{
-		tqsetc("T", 0, 0, i, &numcon, &noerr);
-		
-		for(j = 1; j <= 20; ++j)
-		{
-			tqsetc("P", 0, 0, j, &numcon, &noerr);
-			// Display present settings
-			// printf("\n\nCurrently active conditions:\n");
-			// printf("\n\n**** Begin output table produced by tqshow\n");
-			// fflush(NULL);
-			// tqshow(&noerr);
-			// fflush(NULL);
-			// printf("\n**** End output table produced by tqshow\n\n\n");
-
-			// Calcualte equilibrium
-			darray2[0] = 0.0;
-			tqcen(" ", 0, 0, darray2, &noerr);
-			tqgnsc(1, dstr2, &noerr);
-			tqgetr("XP", 1, 1, &d1, &noerr);
-			// printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, d1);
-			c_all += d1;
-			c_mean += 1;
-			
-			tqgetr("XP", 2, 1, &d1, &noerr);
-			o_all += d1;
-			o_mean += 1;
-			
-			tqgetr("XP", 3, 1, &d1, &noerr);
-			si_all += d1;
-			si_mean += 1;
-
-			// Print ChemSage output table
-			// printf("\n\n**** Begin output table produced by tqcenl\n");
-			// 		  fflush(NULL);
-			// 		  tqcenl(" ",0,0,darray2,&noerr); 
-			// 		  fflush(NULL);
-			// 		  printf("\n**** End output table produced by tqcenl\n\n\n");
-		}
-	}
-	then = time(NULL);
-	
-	printf("Time: %li\n\n", then - now);
-	printf("Mean mole fraction of C in the GAS phase %f\n", c_all / c_mean);
-	printf("Existence of C: %f\n\n", c_all);
-	printf("Mean mole fraction of O in the GAS phase %f\n", o_all / o_mean);
-	printf("Existence of O: %f\n\n", o_all);
-	printf("Mean mole fraction of Si in the GAS phase %f\n", si_all / si_mean);
-	printf("Existence of Si: %f\n\n", si_all);
+	run_iteration(1000,1100,1,20,&now, &numcon, darray2, &noerr);
+	printf("Time: %li\n___________________________\n\n", now);
 	
 	return 0;
 }
