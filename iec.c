@@ -29,6 +29,9 @@ struct iteration_data {
 	DB* darray2;
 	LI* noerr;
 	int do_tqshow;
+	int do_tqcenl;
+	int do_table;
+	int do_eliminate;
 };
 
 // =============
@@ -46,6 +49,109 @@ void abortprog(int lineno, char sr_name[10], LI error_no)
 	exit(error_no);
 }
 
+void table()
+{
+
+
+  LI i, noerr, nphase;
+  DB amount, act;
+  char name[TQSTRLEN];
+
+
+  /* Retrieve and display the activities and equilibrium 
+     amounts of all phases */
+
+
+  /* Get number of phases */
+  tqnop(&nphase, &noerr);
+
+
+  /* Print table header */
+  printf("%-27s%-16s%-16s\n", "Phase name", "amount/mol", "activity");
+
+
+  for(i = 1; i <= nphase; i++) {
+
+
+    /* Get the phase name */
+    tqgnp(i, name, &noerr);
+
+
+    /* Get its equilibrium amount */
+    tqgetr("a",  i, 0, &amount, &noerr);
+
+
+    /*  Get its activity */
+    tqgetr("ac",  i, 0, &act, &noerr);
+
+
+    printf("%-24s%14.5f%14.5f\n", name, amount, act);
+
+
+  }
+}
+
+void table_eliminate()
+{
+
+
+  LI i, noerr, nphase;
+  DB amount, act;
+  char name[TQSTRLEN];
+
+
+  /* Retrieve and display the activities and equilibrium 
+     amounts of all phases */
+
+
+  /* Get number of phases */
+  tqnop(&nphase, &noerr);
+
+  for(i = 1; i <= nphase; i++) {
+
+
+    /* Get the phase name */
+    tqgnp(i, name, &noerr);
+
+
+    /* Get its equilibrium amount */
+    tqgetr("a",  i, 0, &amount, &noerr);
+
+
+    /*  Get its activity */
+    tqgetr("ac",  i, 0, &act, &noerr);
+
+
+		// if ((amount == 0) && (act == 0)) {
+		if ((amount == 0)) {
+			tqcsp(i, "eliminated", &noerr);
+		}
+		
+  }
+}
+
+void table_enter()
+{
+
+
+  LI i, noerr, nphase;
+
+
+  /* Retrieve and display the activities and equilibrium 
+     amounts of all phases */
+
+
+  /* Get number of phases */
+  tqnop(&nphase, &noerr);
+
+  for(i = 1; i <= nphase; i++) {
+	
+			tqcsp(i, "entered", &noerr);
+			
+	}
+		
+}
+
 void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f)
 {
 	*a = 0;
@@ -56,6 +162,14 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f)
 	*f = 0;
 }
 
+void set_all(double a, double b, double c) {
+	LI numcon, noerr;
+	
+	tqsetc("ia", 0 , 1, a, &numcon, &noerr);
+	tqsetc("ia", 0 , 2, a, &numcon, &noerr);
+	tqsetc("ia", 0 , 3, a, &numcon, &noerr);
+}
+
 // void run_iteration(int t_min, int t_max, int p_min, int p_max, LI *time_taken, LI *numcon, DB darray2[2], LI *noerr)
 void run_iteration(struct iteration_data id)
 {
@@ -63,15 +177,17 @@ void run_iteration(struct iteration_data id)
 	int t_max = id.t_max;
 	int p_min = id.p_min;
 	int p_max = id.p_max;
-	LI *time_taken = id.time_taken;
 	LI *numcon = id.numcon;
 	DB *darray2 = id.darray2;
 	LI *noerr = id.noerr;
 	
-	int now, then, i, j;
+	int now, then, i, j, k, l;
+	double n, m, o;
 	DB db1, c_all, c_mean, o_all, o_mean, si_all, si_mean;
 	char dstr2[TQSTRLEN];
+	LI nphase;
 	
+	tqnop(&nphase, noerr);
 	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
 	
 	now = time(NULL);
@@ -82,6 +198,7 @@ void run_iteration(struct iteration_data id)
 		for(j = p_min; j <= p_max; ++j)
 		{
 			tqsetc("P", 0, 0, j, numcon, noerr);
+			
 			// Display present settings if do_tqshow == 1
 			if (id.do_tqshow == 1) {
 				printf("\n\n**** Begin output table produced by tqshow\n");
@@ -92,42 +209,64 @@ void run_iteration(struct iteration_data id)
 				// wait for enter to continue
 				getchar();
 			}
+			
+			// TODO: use table for eliminating stuff that does not occure, activate it after change to P and T again
+			if(id.do_eliminate == 1)
+			{
+				table_enter();
+			}
+			// TODO: this does not what it's supposed to do, it iterates the first element from 0.1 to 1 and than the next....more loops needed
+			for(n = 0.1; n < 0.5; n += 0.1)
+			{
+				for(m = 0.1; m < 0.5; m += 0.1)
+				{
+					for(o = 0.1; o < 0.5; o += 0.1)
+					{
+						// tqsetc("ia", 0 , 1 2 3, n, numcon, noerr);
+						// if (noerr) abortprog(__LINE__,"tqsetc", *noerr);
+						set_all(n, m, o);
+						darray2[0] = 0.0;
+						tqce(" ", 0, 0, darray2, noerr);
+						if (id.do_eliminate == 1) {
+							table_eliminate();
+						}
+						// if (noerr) abortprog(__LINE__,"tqce", *noerr);
+					}
+
+				}
+			}
 
 			// Calcualte equilibrium
-			darray2[0] = 0.0;
-			tqcen(" ", 0, 0, darray2, noerr);
-			tqgnsc(1, dstr2, noerr);
-			tqgetr("XP", 1, 1, &db1, noerr);
-			// printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
+			tqgetr("a", 1, 1, &db1, noerr);
 			c_all += db1;
 			c_mean += 1;
 			
-			tqgetr("XP", 2, 1, &db1, noerr);
+			tqgetr("a", 2, 1, &db1, noerr);
 			o_all += db1;
 			o_mean += 1;
 			
-			tqgetr("XP", 3, 1, &db1, noerr);
+			tqgetr("a", 3, 1, &db1, noerr);
 			si_all += db1;
 			si_mean += 1;
-
-			// Print ChemSage output table
-			// printf("\n\n**** Begin output table produced by tqcenl\n");
-			// 		  fflush(NULL);
-			// 		  tqcenl(" ",0,0,darray2,&noerr); 
-			// 		  fflush(NULL);
-			// 		  printf("\n**** End output table produced by tqcenl\n\n\n");
 		}
 	}
 	then = time(NULL);
 	
-	printf("Mean mole fraction of C in the GAS phase %f\n", c_all / c_mean);
-	printf("Existence of C: %f\n\n", c_all);
-	printf("Mean mole fraction of O in the GAS phase %f\n", o_all / o_mean);
-	printf("Existence of O: %f\n\n", o_all);
-	printf("Mean mole fraction of Si in the GAS phase %f\n", si_all / si_mean);
-	printf("Existence of Si: %f\n\n", si_all);
+	// Print ChemSage output table
+	if (id.do_tqcenl == 1) {
+		printf("\n\n**** Begin output table produced by tqcenl\n");
+		fflush(NULL);
+		tqcenl(" ", 0, 0, darray2, noerr); 
+		fflush(NULL);
+		printf("\n**** End output table produced by tqcenl\n\n\n");
+	}
 	
-	*time_taken = then - now;
+	if(id.do_table == 1)
+	{
+		table();
+	}
+	
+	*id.time_taken = then - now;
 }
 
 int main (int argc, char const *argv[])
@@ -137,7 +276,7 @@ int main (int argc, char const *argv[])
 	*/
 	
 	LI   lint,               // all-purpose integer variable
-	     now, then,
+	     time_taken, time_total,
 	     indexp,             // number of phases
 	     indexc,             // phase constituents
 	     indexl,             // sublattices
@@ -165,7 +304,8 @@ int main (int argc, char const *argv[])
 	     mname[TQSTRLEN],     // mixture model names
 	     newsc[4][TQSTRLEN];  // 4 string array for tqcsc
 
-	int i, j;                 // all-purpose variables
+	int i, j, k;              // all-purpose variables
+	double n;                 // all-purpose variables
 	
 	/*
 		Initializing and Stuff
@@ -194,10 +334,7 @@ int main (int argc, char const *argv[])
 	tqnop(&nphase, &noerr);
 	printf("Number of phases: %li\n", nphase);
 	
-	// Set equilibrium conditions
-	tqsetc("ia", 1, 1, 1.0, &numcon, &noerr);
-	tqsetc("ia", 2, 1, 0.9, &numcon, &noerr);
-	tqsetc("ia", 3, 1, 0.5, &numcon, &noerr);
+	tqshow(&noerr);
 	
 	// initialize vars
 	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
@@ -207,37 +344,28 @@ int main (int argc, char const *argv[])
 	puts("   Start calculation with all components.");
 	puts("********************************************\n");
 	
-	tqce(" ", 0, 0, darray2, &noerr);
-	
-	tqgnsc(1, dstr2, &noerr);
-	tqgetr("XP", 1, 1, &db1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
-	
-	tqgnsc(2, dstr2, &noerr);
-	tqgetr("XP", 2, 1, &db1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
-	
-	tqgnsc(3, dstr2, &noerr);
-	tqgetr("XP", 3, 1, &db1, &noerr);
-	printf("Mole fraction of %s in the GAS phase: %f\n\n", dstr2, db1);
-	
-	tqce(" ", 0, 0, darray2, &noerr);
-	
 	// struct for the iteration
 	struct iteration_data id;
 	id.t_min = 1000;
-	id.t_max = 1100;
+	id.t_max = 1010;
 	id.p_min = 1;
-	id.p_max = 20;
-	id.time_taken = &now;
+	id.p_max = 5;
+	id.time_taken = &time_taken;
 	id.numcon = &numcon;
 	id.darray2 = darray2;
 	id.noerr = &noerr;
 	id.do_tqshow = 0;
+	id.do_tqcenl = 0;
+	id.do_table = 0;
+	id.do_eliminate = 0; 
+	
+	time_total = 0;
 	
 	// run iteration with the parameters set in id
 	run_iteration(id);
-	printf("Time: %li\n___________________________\n\n", now);
+	
+	table();
+	printf("Time: %li\n___________________________\n\n", *id.time_taken);
 
 	// start iteration without Si
 	puts("********************************************");
@@ -248,19 +376,20 @@ int main (int argc, char const *argv[])
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
 	
-	// for(i = 1; i < 9; ++i)
-	// {
-	// 	tqcsp(i, "eliminated", &noerr);
-	// }
+	for(i = 4; i < 9; ++i)
+	{
+		tqcsp(i, "eliminated", &noerr);
+	}
 	
-	// eliminate C
-	tqcsp(2, "eliminated", &noerr);
-	
-	tqce(" ", 0, 0, darray2, &noerr);
+	time_total = 0;
 	
 	// id.do_tqshow = 1;
+	id.do_eliminate = 1;
 	run_iteration(id);
-	printf("Time: %li\n___________________________\n\n", now);
+	time_total += *id.time_taken;
+	
+	table();
+	printf("Time: %li\n___________________________\n\n", time_total);
 	
 	return 0;
 }
