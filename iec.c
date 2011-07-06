@@ -13,12 +13,30 @@
 #include <time.h>
 #include "cacint.h"
 
+// ==================
+// = iteration_data =
+// ==================
+/*
+	Takes all arguments needed for the iteration
+*/
+struct iteration_data {
+	int t_min;
+	int t_max;
+	int p_min;
+	int p_max;
+	LI* time_taken;
+	LI* numcon;
+	DB* darray2;
+	LI* noerr;
+	int do_tqshow;
+};
 
 // =============
 // = abortprog =
 // =============
 /*
 	Reports the error number and the routine it occurred in before it exits
+	Though i don't use it.
 */
 void abortprog(int lineno, char sr_name[10], LI error_no)
 {
@@ -38,9 +56,18 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f)
 	*f = 0;
 }
 
-void run_iteration(int t_min, int t_max, int p_min, int p_max, LI *time_taken, LI *numcon, DB darray2[2], LI *noerr)
+// void run_iteration(int t_min, int t_max, int p_min, int p_max, LI *time_taken, LI *numcon, DB darray2[2], LI *noerr)
+void run_iteration(struct iteration_data id)
 {
-	//TODO: 2 Structs übergeben lassen anstatt tausender vars
+	int t_min = id.t_min;
+	int t_max = id.t_max;
+	int p_min = id.p_min;
+	int p_max = id.p_max;
+	LI *time_taken = id.time_taken;
+	LI *numcon = id.numcon;
+	DB *darray2 = id.darray2;
+	LI *noerr = id.noerr;
+	
 	int now, then, i, j;
 	DB db1, c_all, c_mean, o_all, o_mean, si_all, si_mean;
 	char dstr2[TQSTRLEN];
@@ -55,13 +82,16 @@ void run_iteration(int t_min, int t_max, int p_min, int p_max, LI *time_taken, L
 		for(j = p_min; j <= p_max; ++j)
 		{
 			tqsetc("P", 0, 0, j, numcon, noerr);
-			// Display present settings
-			// printf("\n\nCurrently active conditions:\n");
-			// printf("\n\n**** Begin output table produced by tqshow\n");
-			// fflush(NULL);
-			// tqshow(&noerr);
-			// fflush(NULL);
-			// printf("\n**** End output table produced by tqshow\n\n\n");
+			// Display present settings if do_tqshow == 1
+			if (id.do_tqshow == 1) {
+				printf("\n\n**** Begin output table produced by tqshow\n");
+				fflush(NULL);
+				tqshow(noerr);
+				fflush(NULL);
+				printf("\n**** End output table produced by tqshow\n\n\n");
+				// wait for enter to continue
+				getchar();
+			}
 
 			// Calcualte equilibrium
 			darray2[0] = 0.0;
@@ -193,24 +223,43 @@ int main (int argc, char const *argv[])
 	
 	tqce(" ", 0, 0, darray2, &noerr);
 	
-	run_iteration(1000, 1100, 1, 20, &now, &numcon, darray2, &noerr);
+	// struct for the iteration
+	struct iteration_data id;
+	id.t_min = 1000;
+	id.t_max = 1100;
+	id.p_min = 1;
+	id.p_max = 20;
+	id.time_taken = &now;
+	id.numcon = &numcon;
+	id.darray2 = darray2;
+	id.noerr = &noerr;
+	id.do_tqshow = 0;
+	
+	// run iteration with the parameters set in id
+	run_iteration(id);
 	printf("Time: %li\n___________________________\n\n", now);
 
 	// start iteration without Si
 	puts("********************************************");
 	puts("   Start calculation without some Phases.");
 	puts("********************************************\n");
+	
+	// setting temperature and pressure
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
-	// tqcsp(5, "eliminated", &noerr);
-	// tqcsp(6, "eliminated", &noerr);
-	tqcsp(7, "eliminated", &noerr);
-	tqcsp(8, "eliminated", &noerr);
-	// tqcspc(3, 1, "eliminated", &noerr);
-	// tqcsp(2, "DORMANT", &noerr);
+	
+	// for(i = 1; i < 9; ++i)
+	// {
+	// 	tqcsp(i, "eliminated", &noerr);
+	// }
+	
+	// eliminate C
+	tqcsp(2, "eliminated", &noerr);
+	
 	tqce(" ", 0, 0, darray2, &noerr);
 	
-	run_iteration(1000,1100,1,20,&now, &numcon, darray2, &noerr);
+	// id.do_tqshow = 1;
+	run_iteration(id);
 	printf("Time: %li\n___________________________\n\n", now);
 	
 	return 0;
