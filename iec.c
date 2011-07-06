@@ -152,6 +152,9 @@ void table_enter()
 		
 }
 
+// TODO: table_count: adds all amount of elements of the current equilibrium to a total amount count
+// TODO: table_show: shows the totals
+
 void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f)
 {
 	*a = 0;
@@ -210,12 +213,10 @@ void run_iteration(struct iteration_data id)
 				getchar();
 			}
 			
-			// TODO: use table for eliminating stuff that does not occure, activate it after change to P and T again
 			if(id.do_eliminate == 1)
 			{
 				table_enter();
 			}
-			// TODO: this does not what it's supposed to do, it iterates the first element from 0.1 to 1 and than the next....more loops needed
 			for(n = 0.1; n < 0.5; n += 0.1)
 			{
 				for(m = 0.1; m < 0.5; m += 0.1)
@@ -349,7 +350,7 @@ int main (int argc, char const *argv[])
 	id.t_min = 1000;
 	id.t_max = 1010;
 	id.p_min = 1;
-	id.p_max = 5;
+	id.p_max = 20;
 	id.time_taken = &time_taken;
 	id.numcon = &numcon;
 	id.darray2 = darray2;
