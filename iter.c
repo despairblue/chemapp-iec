@@ -29,9 +29,8 @@ void run_iteration(struct iteration_data id) {
 	
 	if (id.do_eliminate == 1) {
 		tqcsp(1, "eliminated", noerr);
-		// tqcsp(2, "eliminated", noerr);
+		// tqcsp(4, "eliminated", noerr);
 		tqcsp(3, "eliminated", noerr);
-		tqcsp(5, "eliminated", noerr);
 		tqcsp(6, "eliminated", noerr);
 		tqcsp(7, "eliminated", noerr);
 		tqcsp(8, "eliminated", noerr);
