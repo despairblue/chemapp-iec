@@ -6,7 +6,7 @@ LD= g++
 EXTRACFLAGS= -DUNIX
 EXTRACLIBS= -lf2c -lm
 EXTRALDFLAGS = -lg2c
-EXTRALDLIBS = 
+EXTRALDLIBS =
 
 LIBS = lib/libChemAppC.a lib/libLChemApp.a
 
@@ -24,23 +24,25 @@ LIBS = lib/libChemAppC.a lib/libLChemApp.a
 
 
 TARGET	= iec
+OBJECTS = $(TARGET).o iter.o helpers.o
 
 default: $(TARGET)
 
 all: $(TARGET) test clean
 
-$(TARGET).o: $(TARGET).c
-	$(CC) -I. $(CFLAGS) $(EXTRACFLAGS) -c $(TARGET).c
+%.o: %.c 
+	@echo "Erstelle $@"
+	$(CC) -I. $(CFLAGS) $(EXTRACFLAGS) -c $<
 
-$(TARGET): $(TARGET).o
-	$(LD) $(EXTRALDFLAGS) -o $(TARGET) $(TARGET).o $(LIBS) $(EXTRALDLIBS)
+$(TARGET): $(OBJECTS)
+	$(LD) $(EXTRALDFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
 
 test: ./$(TARGET)
 	clear
 	./$(TARGET)
 
 clean:
-	-rm $(TARGET).o $(TARGET)
+	-rm *.o $(TARGET)
 
 
 
