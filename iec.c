@@ -95,7 +95,7 @@ int main (int argc, char const *argv[])
 	id.t_min = 1000;
 	id.t_max = 1010;
 	id.p_min = 1;
-	id.p_max = 20;
+	id.p_max = 10;
 	id.time_taken = &time_taken;
 	id.numcon = &numcon;
 	id.darray2 = darray2;
@@ -121,21 +121,21 @@ int main (int argc, char const *argv[])
 	// setting temperature and pressure
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
-	
-	for(i = 4; i < 9; ++i)
-	{
-		tqcsp(i, "eliminated", &noerr);
-	}
-	
-	time_total = 0;
-	
-	// id.do_tqshow = 1;
-	id.do_eliminate = 1;
-	run_iteration(id);
-	time_total += *id.time_taken;
-	
-	table();
-	printf("Time: %li\n___________________________\n\n", time_total);
+		
+		// for(i = 4; i < 9; ++i)
+		// 		{
+		// 			tqcsp(i, "eliminated", &noerr);
+		// 		}
+		
+		time_total = 0;
+		
+		// id.do_tqshow = 1;
+		id.do_eliminate = 1;
+		run_iteration(id);
+		time_total += *id.time_taken;
+		
+		table();
+		printf("Time: %li\n___________________________\n\n", time_total);
 	
 	return 0;
 }
