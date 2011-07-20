@@ -1,3 +1,12 @@
+// 
+//  iter.h
+//  
+//  
+//  Created by Danny Arnold on 2011-07-20.
+//  Copyright 2011 TU Bergakademie Freiberg. All rights reserved.
+// 
+
+
 #include "cacint.h"
 
 // ==================
