@@ -2,4 +2,5 @@ syntax: glob
 *.dat
 *.o
 *.DS_Store
-*._iec.c
+*._*
+iec
