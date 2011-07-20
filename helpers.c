@@ -142,7 +142,6 @@ void table_count(DB total_amount[]) {
 void table_show(DB total_amount[]) {
 	
 	LI i, noerr, nphase;
-  DB amount, act;
   char name[TQSTRLEN];
 
 
@@ -189,9 +188,6 @@ void table_enter() {
 		
 }
 
-// TODO: table_count: adds all amount of elements of the current equilibrium to a total amount count
-// TODO: table_show: shows the totals
-
 void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
 	*a = 0;
 	*b = 0;
@@ -205,6 +201,18 @@ void set_all(double a, double b, double c) {
 	LI numcon, noerr;
 	
 	tqsetc("ia", 0 , 1, a, &numcon, &noerr);
-	tqsetc("ia", 0 , 2, a, &numcon, &noerr);
-	tqsetc("ia", 0 , 3, a, &numcon, &noerr);
+	tqsetc("ia", 0 , 2, b, &numcon, &noerr);
+	tqsetc("ia", 0 , 3, c, &numcon, &noerr);
 }
+
+// int contains(int** a,DB n, DB m, DB o, int x, int y) {
+// 	int rt = 1;
+// 	for(size_t i = 0; i < x; ++i)
+// 	{
+// 		
+// 	}
+// }
+// 
+// void add(int** a, DB n, DB, m, DB o, int x, int y) {
+// 	
+// }

@@ -3,7 +3,7 @@
  
 #LD= g77
 LD= g++
-EXTRACFLAGS= -DUNIX
+EXTRACFLAGS= -DUNIX -std=c99 -Wextra -Wall
 EXTRACLIBS= -lf2c -lm
 EXTRALDFLAGS = -lg2c
 EXTRALDLIBS =
