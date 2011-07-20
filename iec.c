@@ -113,7 +113,7 @@ int main (int argc, char const *argv[])
 	// table();
 	printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 
-	// start iteration without Si
+	// start iteration without come phases
 	puts("********************************************");
 	puts("   Start calculation without some Phases.");
 	puts("********************************************\n");
