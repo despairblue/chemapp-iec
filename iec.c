@@ -22,7 +22,6 @@ int main (int argc, char const *argv[])
 	*/
 	
 	LI   lint,               // all-purpose integer variable
-	     time_taken, time_total,
 	     indexp,             // number of phases
 	     indexc,             // phase constituents
 	     indexl,             // sublattices
@@ -79,39 +78,39 @@ int main (int argc, char const *argv[])
 	// get number of phases
 	tqnop(&nphase, &noerr);
 	printf("Number of phases: %li\n", nphase);
+	tqnosc(&lint,&noerr);
+	printf("Number of elements: %li\n", lint);
 	
 	tqshow(&noerr);
 	
 	// initialize vars
 	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
 	
-	// start iteration with all components
-	puts("********************************************");
-	puts("   Start calculation with all components.");
-	puts("********************************************\n");
-	
 	// struct for the iteration
-	struct iteration_data id;
+	struct iteration_input id;
 	id.t_min = 1000;
 	id.t_max = 1010;
 	id.p_min = 1;
-	id.p_max = 10;
-	id.time_taken = &time_taken;
-	id.numcon = &numcon;
-	id.darray2 = darray2;
-	id.noerr = &noerr;
+	id.p_max = 2;
+
 	id.do_tqshow = 0;
 	id.do_tqcenl = 0;
 	id.do_table = 0;
 	id.do_eliminate = 0; 
 	
-	time_total = 0;
+	struct iteration_output od;
+	od.time_taken = 0;
+	
+	// start iteration with all components
+	puts("********************************************");
+	puts("   Start calculation with all components.");
+	puts("********************************************\n");
 	
 	// run iteration with the parameters set in id
-	run_iteration(id);
+	run_iteration(id, &od);
 	
-	table();
-	printf("Time: %li\n___________________________\n\n", *id.time_taken);
+	// table();
+	printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 
 	// start iteration without Si
 	puts("********************************************");
@@ -121,21 +120,13 @@ int main (int argc, char const *argv[])
 	// setting temperature and pressure
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
-		
-		// for(i = 4; i < 9; ++i)
-		// 		{
-		// 			tqcsp(i, "eliminated", &noerr);
-		// 		}
-		
-		time_total = 0;
-		
-		// id.do_tqshow = 1;
-		id.do_eliminate = 1;
-		run_iteration(id);
-		time_total += *id.time_taken;
-		
-		table();
-		printf("Time: %li\n___________________________\n\n", time_total);
+	
+	// id.do_tqshow = 1;
+	id.do_eliminate = 1;
+	run_iteration(id, &od);
+	
+	// table();
+	printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 	
 	return 0;
 }
