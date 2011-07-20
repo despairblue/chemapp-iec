@@ -86,7 +86,7 @@ int main (int argc, char const *argv[])
 	// initialize vars
 	reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
 	
-	// struct for the iteration
+	// input struct for the iteration
 	struct iteration_input id;
 	id.t_min = 1000;
 	id.t_max = 1010;
@@ -98,6 +98,7 @@ int main (int argc, char const *argv[])
 	id.do_table = 0;
 	id.do_eliminate = 0; 
 	
+	// output struct for the iteration
 	struct iteration_output od;
 	od.time_taken = 0;
 	
