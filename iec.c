@@ -57,7 +57,7 @@ int main (int argc, char const *argv[])
 	printf("Number of phases: %li\n", nphase);
 	tqnosc(&lint,&noerr);
 	printf("Number of elements: %li\n", lint);
-	
+	tqcsu("Amount", "gram", &noerr);
 	tqshow(&noerr);
 		
 	// input struct for the iteration
@@ -96,7 +96,7 @@ int main (int argc, char const *argv[])
 	tqsetc("T", 0, 0, 1000, &numcon, &noerr);
 	tqsetc("P", 0, 0, 1, &numcon, &noerr);
 	
-	// id.do_tqshow = 1;
+//	id.do_tqshow = 1;
 	id.do_eliminate = 1;
 	run_iteration(id, &od);
 	

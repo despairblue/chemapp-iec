@@ -70,6 +70,8 @@ void table_eliminate(int eliminated[]) {
 
 
   LI i, noerr, nphase;
+  noerr=0;
+  nphase=0;
   DB amount, act;
   char name[TQSTRLEN];
 
@@ -80,7 +82,6 @@ void table_eliminate(int eliminated[]) {
 
   /* Get number of phases */
   tqnop(&nphase, &noerr);
-
   for(i = 1; i <= nphase; i++) {
 
 
@@ -108,7 +109,7 @@ void table_eliminate(int eliminated[]) {
 void table_count(DB total_amount[]) {
 
 
-  LI i, noerr, nphase;
+  LI noerr, nphase;
   DB amount, act;
   char name[TQSTRLEN];
 
@@ -120,7 +121,7 @@ void table_count(DB total_amount[]) {
   /* Get number of phases */
   tqnop(&nphase, &noerr);
 
-  for(i = 1; i <= nphase; i++) {
+  for(int i = 1; i <= nphase; i++) {
 
 
     /* Get the phase name */
@@ -141,7 +142,7 @@ void table_count(DB total_amount[]) {
 
 void table_show(DB total_amount[]) {
 	
-	LI i, noerr, nphase;
+	LI noerr, nphase;
   char name[TQSTRLEN];
 
 
@@ -154,14 +155,14 @@ void table_show(DB total_amount[]) {
   /* Get number of phases */
   tqnop(&nphase, &noerr);
 
-  for(i = 1; i <= nphase; i++) {
+  for(int i = 1; i <= nphase; i++) {
 
 
     /* Get the phase name */
     tqgnp(i, name, &noerr);
 
 
-		printf("%-24s%14.5f\n", name, total_amount[i]);
+		printf("%-24s%14.5f\n", name, total_amount[i-1]);
   }
 
 

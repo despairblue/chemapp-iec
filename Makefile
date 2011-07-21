@@ -2,13 +2,14 @@
 # Sample Makefile for the compilation of C programs using ChemApp
  
 #LD= g77
+CC= gcc
 LD= g++
-EXTRACFLAGS= -DUNIX -std=c99 -Wextra -Wall
+EXTRACFLAGS= -DUNIX -std=c99 -Wextra -Wall -g
 EXTRACLIBS= -lf2c -lm
 EXTRALDFLAGS = -lg2c
 EXTRALDLIBS =
 
-LIBS = lib/libChemAppC.a lib/libLChemApp.a
+LIBS = lib/libChemAppC.a lib/libSChemApp.a
 
 # This examples Makefile uses the STATIC version of ChemApp. If your
 # distribution also contains the SHARED version of the ChemApp
