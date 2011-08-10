@@ -39,25 +39,11 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     // will contain the total amount of any phase
     DB *total_amount = malloc(nphases * sizeof(DB));
 
-    int** x;
-
-    x = (int**) malloc(pow(10, nelements) * sizeof(int*));
-    for ( int i = 0; i <(int) pow(10, nelements); i++) {
-    //    x[i] = (int*) malloc(3 * sizeof(DB));
-        for ( int j = 0; j < 3; j++ ) {
-    //        x[i][j] = 0.0;
-//    	      printf("test %f, %i, %i, %i\n",pow(10.0,3),nelements,i,j);
-        }
-    }
-
     // initializing arrays to zero
     for (int i = 0; i < nphases; ++i) {
         eliminated[i] = 0 ;
         total_amount[i] = 0;
     }
-
-    // TODO remove
-    // reset_vars(&c_all, &c_mean, &o_all, &o_mean, &si_all, &si_mean);
 
     if (id.do_eliminate == 1) {
         tqcsp(3, "eliminated", &noerr);
@@ -97,37 +83,18 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                 {
                     for (double o = 0; o < 1.1; o += 0.1)
                     {
-                        // TODO implement contains() and add()
-                        // if ( !contains(x, n, m, o) ) {
-                        // add(x, n, m, o);
-
-                        // tqsetc("ia", 0 , 1 2 3, n, numcon, noerr);
-                        // if (noerr) abortprog(__LINE__,"tqsetc", *noerr);
                         if ((n+m+o > 0.95) && (n+m+o < 1.05)) {
                             set_all(n, m, o);
                             darray2[0] = 0.0;
                             tqce(" ", 0, 0, darray2, &noerr);
                             table_count(total_amount);
-//							table();
-//							table_show(total_amount);
-//							getchar();
+
                             table_eliminate(eliminated);
 
-                            // TODO remove
-                            count_done++;
-  //                          printf("n: %f	m: %f	o: %f\n", n,m,o);
                         }
-                        // }
-
-                        // TODO remove
-                        count_all++;
-
                     }
                 }
             }
-
-            // TODO remove
-            // printf("count_all: %i\ncount_done: %i\n", count_all, count_done );
         }
     }
 
