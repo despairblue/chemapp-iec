@@ -82,6 +82,7 @@ void table_eliminate(int eliminated[]) {
 
   /* Get number of phases */
   tqnop(&nphase, &noerr);
+
   for(i = 1; i <= nphase; i++) {
 
 
