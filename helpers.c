@@ -45,7 +45,7 @@ void table() {
     printf("%-27s%-16s%-16s\n", "Phase name", "amount/mol", "activity");
 
 
-    for(i = 1; i <= nphase; i++) {
+    for (i = 1; i <= nphase; i++) {
 
 
         /* Get the phase name */
@@ -67,20 +67,20 @@ void table() {
 }
 
 void eliminate_phases(int eliminate[]) {
-	LI i, noerr, nphases;
-	noerr = 0;
-	nphases = 0;
-	
-	/* Get number of phases */
+    LI i, noerr, nphases;
+    noerr = 0;
+    nphases = 0;
+
+    /* Get number of phases */
     tqnop(&nphases, &noerr);
-    
+
     for (int i = 0; i < nphases; i++) {
-    	if(eliminate[i] == 0)
-			{
-				tqcsp(i+1, "eliminated", &noerr);
-			}
+        if (eliminate[i] == 0)
+        {
+            tqcsp(i+1, "eliminated", &noerr);
+        }
     }
-    
+
 }
 
 void table_eliminate(int eliminated[]) {
@@ -100,7 +100,7 @@ void table_eliminate(int eliminated[]) {
     /* Get number of phases */
     tqnop(&nphase, &noerr);
 
-    for(i = 1; i <= nphase; i++) {
+    for (i = 1; i <= nphase; i++) {
 
 
         /* Get the phase name */
@@ -139,7 +139,7 @@ void table_count(DB total_amount[]) {
     /* Get number of phases */
     tqnop(&nphase, &noerr);
 
-    for(int i = 1; i <= nphase; i++) {
+    for (int i = 1; i <= nphase; i++) {
         /* Get its equilibrium amount */
         tqgetr("a",  i, 0, &amount, &noerr);
 
@@ -167,7 +167,7 @@ void table_show(DB total_amount[]) {
     /* Get number of phases */
     tqnop(&nphase, &noerr);
 
-    for(int i = 1; i <= nphase; i++) {
+    for (int i = 1; i <= nphase; i++) {
 
 
         /* Get the phase name */
@@ -193,7 +193,7 @@ void table_enter() {
     /* Get number of phases */
     tqnop(&nphase, &noerr);
 
-    for(i = 1; i <= nphase; i++) {
+    for (i = 1; i <= nphase; i++) {
 
         tqcsp(i, "entered", &noerr);
 
@@ -213,11 +213,14 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
 void set_all(int arr[], int step) {
     LI numcon, noerr, nelements;
 
-		/* Get number of elements */
+    /* Get number of elements */
     tqnosc(&nelements, &noerr);
 
-		for(int i = 1; i <= nelements; i++)
-		{
-			tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
-		}
+    for (int i = 1; i <= nelements; i++)
+    {
+        if(i!=6)
+        {
+          tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
+        }
+    }
 }

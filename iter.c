@@ -16,18 +16,22 @@
 #include "math.h"
 
 void next(int arr[], int size, int lower_bound, int upper_bound) {
-	int pointer = size - 1;
-	
-	if(pointer < 0)
-	{
-		arr[0]++;
-	}
-	if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
-		arr[pointer] = lower_bound;
-		next(arr, pointer, lower_bound, upper_bound);
-	} else {
-		arr[pointer]++;
-	}
+    int pointer = size - 1;
+
+    if (pointer < 0)
+    {
+        arr[0]++;
+    }
+    if (pointer==5)
+    {
+        pointer=pointer-1;
+    }
+    if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
+        arr[pointer] = lower_bound;
+        next(arr, pointer, lower_bound, upper_bound);
+    } else {
+        arr[pointer]++;
+    }
 }
 
 void run_iteration(struct iteration_input id, struct iteration_output* od) {
@@ -36,11 +40,11 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     int t_max = id.t_max;
     int p_min = id.p_min;
     int p_max = id.p_max;
-		int step  = id.step;
+    int step  = id.step;
     LI numcon;
     DB darray2[2];
     LI noerr;
-		int* eliminate = id.eliminate;
+    int* eliminate = id.eliminate;
 
     int now, then, count_all, count_done, sum;
     LI nphases, nelements;
@@ -52,7 +56,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     // will be 1 for all phases not having any amount
     int *eliminated = malloc(nphases * sizeof(int));
-		int *loop = malloc(nelements * sizeof(int));
+    int *loop = malloc(nelements * sizeof(int));
 
     // will contain the total amount of any phase
     DB *total_amount = malloc(nphases * sizeof(DB));
@@ -92,33 +96,37 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
             count_done = 0;
             count_all = 0;
 
-						for(int i = 0; i < nelements; ++i)
-						{
-							loop[i] = 0;
-						}
+            for (int i = 0; i < nelements; ++i)
+            {
+                loop[i] = 0;
+            }
 
-						loop[nelements - 1] = 1;
-						
-						while (loop[0] <= step) {
-							
-							sum = 0;
-							for(LI i = 0; i < nelements; ++i)
-							{
-								sum += loop[i];
-							}
-							
-							if (sum == step) {
-                  set_all(loop, step);
+//            loop[nelements - 1] = 1;
 
-                  darray2[0] = 0.0;
-                  tqce(" ", 0, 0, darray2, &noerr);
-                  table_count(total_amount);
+            while (loop[0] <= step) {
 
-                  table_eliminate(eliminated);
-              }
-							
-							next(loop, nelements, 0, step);
-						}
+                sum = 0;
+                for (LI i = 0; i < nelements; ++i)
+                {
+                    sum += loop[i];
+                }
+
+                if (sum == step) {
+                    set_all(loop, step);
+
+//                    tqshow(&noerr);
+//                    getchar();
+
+                    darray2[0] = 0.0;
+                    tqcel(" ", 0, 0, darray2, &noerr);
+                    getchar();
+                    table_count(total_amount);
+
+                    table_eliminate(eliminated);
+                }
+
+                next(loop, nelements, 0, step);
+            }
         }
     }
 
@@ -140,7 +148,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     (*od).time_taken = then - now;
-		(*od).eliminated = eliminated;
+    (*od).eliminated = eliminated;
 
     table_show(total_amount);
 }

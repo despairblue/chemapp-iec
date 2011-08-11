@@ -45,11 +45,13 @@ int main ()
 
     // Open data-file for reading
     // tqopna("cosi.dat", unitno, &noerr);
-    tqopna("femgsio4.dat", unitno, &noerr);
+    //tqopna("femgsio4.dat", unitno, &noerr);
+    tqopna("pitzer.dat", unitno, &noerr);
+    //tqopnt("Test.cst",10,&noerr);
 
     // Read data-file
     tqrfil(&noerr);
-
+    //tqrcst(&noerr);
     // Close data-file
     tqclos(unitno, &noerr);
 
@@ -59,6 +61,7 @@ int main ()
     tqnosc(&lint,&noerr);
     printf("Number of elements: %li\n", lint);
     tqcsu("Amount", "gram", &noerr);
+    //tqcsu("Amount", "mol", &noerr);
     tqshow(&noerr);
 
     // input struct for the iteration

@@ -5,8 +5,8 @@
  *
  * ----------------------------------------------------------------------
  *  File        : $RCSfile: cacint.h,v $
- *  Revision    : $Revision: 1.23 $
- *  Last Change : $Date: 2003/01/23 11:17:23 $ by $Author: sp $
+ *  Revision    : $Revision: 1.32 $
+ *  Last Change : $Date: 2010-09-03 09:44:29 $ by $Author: sp $
  *
  *  Language    : C
  * ----------------------------------------------------------------------
@@ -27,26 +27,76 @@ form, also in parts, is prohibited.
 #ifndef _cacint
 #define _cacint
 
-#ifdef UNIX
-#define LI  long
-#define LIP long*
-#define LNT long
-#define DB  double
-#define DBP double*
-#define CHP char*
-#define CMT extern int
+#define DB  double		/* double	*/
+#define DBP double*		/* double*	*/
+#define CHP char*		/* char*	*/
 #define VDP void*
-#define ftnlen long		/* FORTRAN string length type */
+
+
+#ifndef LIP
+#if (defined(_WIN64)||defined(WIN64)||defined(_X86_64)||defined(__x86_64__)||defined(x86_64))
+#define LIP int*
 #else
-#define LI  long         	/* unsigned int		*/
-#define LIP long*       	/* unsigned int*	*/
-#define LNT long        	/* unsigned int		*/
-#define DB  double		/* double		*/
-#define DBP double*		/* double*		*/
-#define CHP char*		/* char*		*/
-#define CMT void __stdcall	/* void __stdcall	*/
-#define VDP void*		/* void*		*/
+#define LIP long*
+#endif // _WIN64
 #endif
+
+#ifndef LI
+#if (defined(_WIN64)||defined(WIN64)||defined(_X86_64)||defined(__x86_64__)||defined(x86_64))
+#define LI int
+#else
+#define LI long
+#endif // _WIN64
+#endif
+
+#ifndef LNT
+#if (defined(_WIN64)||defined(WIN64)||defined(_X86_64)||defined(__x86_64__)||defined(x86_64))
+#define LNT int
+#else
+#define LNT long
+#endif // _WIN64
+#endif
+
+#ifndef CMT
+#if (defined(UNIX)||defined(Unix)||defined(__CYGWIN__))
+#define CMT extern int
+#else
+#define CMT void __stdcall
+#endif // _WIN64
+#endif
+
+#ifdef UNIX
+#if(defined(_X86_64)||defined(__x86_64__)||defined(x86_64))
+#define ftnlen int
+#else
+#define ftnlen long
+#endif
+#endif
+
+#ifdef __CYGWIN__
+#if(defined(_X86_64)||defined(__x86_64__)||defined(x86_64))
+#define ftnlen int
+#else
+#define ftnlen long
+#endif
+#endif
+
+//#ifdef UNIX
+//#define LI  int
+//#define LIP int*
+//#define LNT int
+//#define CMT extern int
+//#define VDP void*
+//#define ftnlen int			/* FORTRAN string length type */
+//
+//#else
+//#define LI  long         		/* unsigned int		*/
+//#define LIP long*       		/* unsigned int*	*/
+//#define LNT long        		/* unsigned int		*/
+//#define CMT void __stdcall	/* void __stdcall	*/
+//#define VDP void*				/* void*			*/
+//#endif
+
 
 /* Length of a TQ String */
 #define TQSTRLEN 25
@@ -118,7 +168,7 @@ extern "C" {
     	    LIP IOSTAT,LIP NOERR);
     */
     int tqbond(LI INDEXP, LI INDEXA, LI INDEXB, LI INDEXC, LI INDEXD,
-               LI INDEXE, LI INDEXF, DBP VAL, LIP NOERR);
+               DBP VAL, LIP NOERR);
     int tqused(LIP NA,LIP NB,LIP NC,LIP ND,LIP NE,LIP NF,LIP NG,LIP NH,LIP NI,
                LIP NJ,LIP NK,LIP NOERR);
     int tqgtrh(LIP TFHVER,
@@ -142,8 +192,14 @@ extern "C" {
     int tqgthi(CHP HASPT, LIP HASPID, LIP NOERR);
     int tqcen (CHP OPTION, LI INDEXP, LI INDEXC, DBP VALS, LIP NOERR);
     int tqcenl(CHP OPTION, LI INDEXP, LI INDEXC, DBP VALS, LIP NOERR);
+    int tqwasc(CHP FILE, LIP NOERR);
+    int tqcdat(LI I1, LI I2, LI I3, LI I4, LI I5, DB VAL, LIP NOERR);
+    int tqchar(LI INDEXP, LI INDEXC, DBP VAL, LIP NOERR);
+    int tqcnsc(LI INDEXS, CHP NAME, LIP NOERR);
+    int tqlpar(LI INDEXP, CHP OPTION, LIP NOPAR, CHP CHRPAR, LIP LGTPAR, LIP NOERR);
+    int tqgpar(LI INDEXP, CHP OPTION, LI INDEXX, LIP NOEXPR, LIP NVALA, DBP VALA, LIP NOERR);
 
 #ifdef __cplusplus
 };
-#endif          /* __cplusplus        */
-#endif 		/* _cacint */
+#endif		/* __cplusplus	*/
+#endif		/* _cacint		*/
