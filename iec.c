@@ -45,7 +45,7 @@ int main (int argc, char const *argv[])
 
     // Open data-file for reading
     // tqopna("cosi.dat", unitno, &noerr);
-    tqopna("cno.dat", unitno, &noerr);
+    tqopna("femgsio4.dat", unitno, &noerr);
 
     // Read data-file
     tqrfil(&noerr);
@@ -76,6 +76,8 @@ int main (int argc, char const *argv[])
     id.do_eliminate = 0;
 		id.do_test = 0;
 
+		id.eliminate = 0;
+
     // output struct for the iteration
     struct iteration_output od;
     od.time_taken = 0;
@@ -96,6 +98,7 @@ int main (int argc, char const *argv[])
     {
         printf("%d: %d\n", i+1, od.eliminated[i]);
     }
+		printf("\n\n\n");
 
     // start iteration without come phases
     puts("********************************************");
@@ -107,6 +110,7 @@ int main (int argc, char const *argv[])
     tqsetc("P", 0, 0, 1, &numcon, &noerr);
 
 		// id.do_tqshow = 1;
+		id.eliminate = od.eliminated;
     id.do_eliminate = 1;
     run_iteration(id, &od);
 

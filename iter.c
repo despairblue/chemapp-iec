@@ -40,6 +40,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     LI numcon;
     DB darray2[2];
     LI noerr;
+		int* eliminate = id.eliminate;
 
     int now, then, count_all, count_done, sum;
     LI nphases, nelements;
@@ -63,10 +64,13 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     if (id.do_eliminate == 1) {
-        // tqcsp(3, "eliminated", &noerr);
-        // tqcsp(6, "eliminated", &noerr);
-        // tqcsp(7, "eliminated", &noerr);
-        // tqcsp(8, "eliminated", &noerr);
+        for(size_t i = 0; i < nphases; ++i)
+        {
+					if(eliminate[i] == 0)
+					{
+						tqcsp(i+1, "eliminated", &noerr);
+					}
+        }
     }
 
     // current time before iteration

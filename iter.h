@@ -28,6 +28,8 @@ struct iteration_input {
     int do_table;
     int do_eliminate;
 		int do_test;
+		
+		int* eliminate;
 };
 
 struct iteration_output {
