@@ -64,7 +64,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     if (id.do_eliminate == 1) {
-        for(size_t i = 0; i < nphases; ++i)
+        for(LI i = 0; i < nphases; ++i)
         {
 					if(eliminate[i] == 0)
 					{
@@ -108,7 +108,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 						while (loop[0] <= step) {
 							
 							sum = 0;
-							for(size_t i = 0; i < nelements; ++i)
+							for(LI i = 0; i < nelements; ++i)
 							{
 								sum += loop[i];
 							}
