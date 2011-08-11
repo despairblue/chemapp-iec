@@ -96,7 +96,7 @@ int main (int argc, char const *argv[])
     tqsetc("T", 0, 0, 1000, &numcon, &noerr);
     tqsetc("P", 0, 0, 1, &numcon, &noerr);
 
-//	id.do_tqshow = 1;
+		// id.do_tqshow = 1;
     id.do_eliminate = 1;
     run_iteration(id, &od);
 

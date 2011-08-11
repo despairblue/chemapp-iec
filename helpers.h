@@ -16,6 +16,6 @@ void table_count(DB[]);
 void table_show(DB[]);
 void table_enter();
 void reset_vars(DB*, DB*, DB*, DB*, DB*, DB*);
-void set_all(double, double, double);
+void set_all(int[], int);
 // int contains(int**, DB, DB, DB, int, int);
 // void add(int**, DB, DB, DB, int, int);

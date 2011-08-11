@@ -123,12 +123,6 @@ void table_count(DB total_amount[]) {
     tqnop(&nphase, &noerr);
 
     for(int i = 1; i <= nphase; i++) {
-
-
-        /* Get the phase name */
-        tqgnp(i, name, &noerr);
-
-
         /* Get its equilibrium amount */
         tqgetr("a",  i, 0, &amount, &noerr);
 
@@ -199,22 +193,14 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
     *f = 0;
 }
 
-void set_all(double a, double b, double c) {
-    LI numcon, noerr;
+void set_all(int arr[], int step) {
+    LI numcon, noerr, nelements;
 
-    tqsetc("ia", 0 , 1, a, &numcon, &noerr);
-    tqsetc("ia", 0 , 2, b, &numcon, &noerr);
-    tqsetc("ia", 0 , 3, c, &numcon, &noerr);
+		/* Get number of elements */
+    tqnosc(&nelements, &noerr);
+
+		for(int i = 1; i <= nelements; i++)
+		{
+			tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
+		}
 }
-
-// int contains(int** a,DB n, DB m, DB o, int x, int y) {
-// 	int rt = 1;
-// 	for(size_t i = 0; i < x; ++i)
-// 	{
-//
-// 	}
-// }
-//
-// void add(int** a, DB n, DB, m, DB o, int x, int y) {
-//
-// }

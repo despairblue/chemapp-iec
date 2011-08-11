@@ -15,17 +15,33 @@
 
 #include "math.h"
 
+void next(int arr[], int size, int lower_bound, int upper_bound) {
+	int pointer = size - 1;
+	
+	if(pointer < 0)
+	{
+		arr[0]++;
+	}
+	if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
+		arr[pointer] = lower_bound;
+		next(arr, pointer, lower_bound, upper_bound);
+	} else {
+		arr[pointer]++;
+	}
+}
+
 void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     int t_min = id.t_min;
     int t_max = id.t_max;
     int p_min = id.p_min;
     int p_max = id.p_max;
+		int step = 10;
     LI numcon;
     DB darray2[2];
     LI noerr;
 
-    int now, then, count_all, count_done;
+    int now, then, count_all, count_done, sum;
     LI nphases, nelements;
 
     // number of elements
@@ -35,6 +51,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     // will be 1 for all phases not having any amount
     int *eliminated = malloc(nphases * sizeof(int));
+		int *loop = malloc(nelements * sizeof(int));
 
     // will contain the total amount of any phase
     DB *total_amount = malloc(nphases * sizeof(DB));
@@ -77,24 +94,32 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
             count_done = 0;
             count_all = 0;
 
-            for (double n = 0; n < 1.1; n += 0.1)
-            {
-                for (double m = 0; m < 1.1; m += 0.1)
-                {
-                    for (double o = 0; o < 1.1; o += 0.1)
-                    {
-                        if ((n+m+o > 0.95) && (n+m+o < 1.05)) {
-                            set_all(n, m, o);
-                            darray2[0] = 0.0;
-                            tqce(" ", 0, 0, darray2, &noerr);
-                            table_count(total_amount);
+						for(int i = 0; i < nelements; ++i)
+						{
+							loop[i] = 0;
+						}
 
-                            table_eliminate(eliminated);
+						loop[nelements - 1] = 1;
+						
+						while (loop[0] <= step) {
+							
+							sum = 0;
+							for(size_t i = 0; i < nelements; ++i)
+							{
+								sum += loop[i];
+							}
+							
+							if (sum == step) {
+                  set_all(loop, step);
+                  darray2[0] = 0.0;
+                  tqce(" ", 0, 0, darray2, &noerr);
+                  table_count(total_amount);
 
-                        }
-                    }
-                }
-            }
+                  table_eliminate(eliminated);
+              }
+							
+							next(loop, nelements, 0, step);
+						}
         }
     }
 
