@@ -129,7 +129,7 @@ void table_count(DB total_amount[]) {
 
     LI noerr, nphase;
     DB amount, act;
-    char name[TQSTRLEN];
+//    char name[TQSTRLEN];
 
 
     /* Retrieve and display the activities and equilibrium

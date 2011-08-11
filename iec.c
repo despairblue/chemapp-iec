@@ -15,7 +15,7 @@
 #include "iter.h"
 #include "helpers.h"
 
-int main (int argc, char const *argv[])
+int main ()
 {
     /*
     	Variable Declarations
