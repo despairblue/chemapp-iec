@@ -64,13 +64,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     if (id.do_eliminate == 1) {
-        for(size_t i = 0; i < nphases; ++i)
-        {
-					if(eliminate[i] == 0)
-					{
-						tqcsp(i+1, "eliminated", &noerr);
-					}
-        }
+        eliminate_phases(eliminate);
     }
 
     // current time before iteration

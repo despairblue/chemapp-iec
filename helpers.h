@@ -19,3 +19,4 @@ void reset_vars(DB*, DB*, DB*, DB*, DB*, DB*);
 void set_all(int[], int);
 // int contains(int**, DB, DB, DB, int, int);
 // void add(int**, DB, DB, DB, int, int);
+void eliminate_phases(int[]);

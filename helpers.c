@@ -66,6 +66,23 @@ void table() {
     }
 }
 
+void eliminate_phases(int eliminate[]) {
+	LI i, noerr, nphases;
+	noerr = 0;
+	nphases = 0;
+	
+	/* Get number of phases */
+    tqnop(&nphases, &noerr);
+    
+    for (int i = 0; i < nphases; i++) {
+    	if(eliminate[i] == 0)
+			{
+				tqcsp(i+1, "eliminated", &noerr);
+			}
+    }
+    
+}
+
 void table_eliminate(int eliminated[]) {
 
 
