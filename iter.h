@@ -21,14 +21,18 @@ struct iteration_input {
     int p_min;
     int p_max;
 
+		int step;
+
     int do_tqshow;
     int do_tqcenl;
     int do_table;
     int do_eliminate;
+		int do_test;
 };
 
 struct iteration_output {
     LI time_taken;
+		int* eliminated;
 };
 
 void run_iteration(struct iteration_input, struct iteration_output*);

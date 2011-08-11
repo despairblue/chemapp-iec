@@ -44,7 +44,8 @@ int main (int argc, char const *argv[])
     tqgio("FILE", &unitno, &noerr);
 
     // Open data-file for reading
-    tqopna("cosi.dat", unitno, &noerr);
+    // tqopna("cosi.dat", unitno, &noerr);
+    tqopna("cno.dat", unitno, &noerr);
 
     // Read data-file
     tqrfil(&noerr);
@@ -67,10 +68,13 @@ int main (int argc, char const *argv[])
     id.p_min = 1;
     id.p_max = 10;
 
+		id.step = 10;
+
     id.do_tqshow = 0;
     id.do_tqcenl = 0;
     id.do_table = 0;
     id.do_eliminate = 0;
+		id.do_test = 0;
 
     // output struct for the iteration
     struct iteration_output od;
@@ -86,6 +90,12 @@ int main (int argc, char const *argv[])
 
     // table();
     printf("\nTime: %li\n___________________________\n\n", od.time_taken);
+
+		puts("\nPhases that could be eliminated:");
+    for (int i = 0; i < nphase; ++i)
+    {
+        printf("%d: %d\n", i+1, od.eliminated[i]);
+    }
 
     // start iteration without come phases
     puts("********************************************");

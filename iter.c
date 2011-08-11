@@ -36,7 +36,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     int t_max = id.t_max;
     int p_min = id.p_min;
     int p_max = id.p_max;
-		int step = 10;
+		int step  = id.step;
     LI numcon;
     DB darray2[2];
     LI noerr;
@@ -111,8 +111,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 							
 							if (sum == step) {
                   set_all(loop, step);
-									// tqshow(&noerr);
-									// getchar();
+
                   darray2[0] = 0.0;
                   tqce(" ", 0, 0, darray2, &noerr);
                   table_count(total_amount);
@@ -143,13 +142,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     (*od).time_taken = then - now;
+		(*od).eliminated = eliminated;
 
     table_show(total_amount);
-    if (!id.do_eliminate) {
-        puts("\nPhases that could be eliminated:");
-        for (int i = 0; i < nphases; ++i)
-        {
-            printf("%d: %d\n", i+1, eliminated[i]);
-        }
-    }
 }
