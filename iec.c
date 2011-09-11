@@ -44,16 +44,22 @@ int main ()
     tqgio("FILE", &unitno, &noerr);
 
     // Open data-file for reading
-    // tqopna("cosi.dat", unitno, &noerr);
-    //tqopna("femgsio4.dat", unitno, &noerr);
+    // tqopna("pitzer.dat", unitno, &noerr);
+    // tqopna("femgsio4.dat", unitno, &noerr);
     tqopna("cosi.dat", unitno, &noerr);
-    //tqopnt("Test.cst",10,&noerr);
+    // tqopnt("Test.cst",10,&noerr);
 
     // Read data-file
     tqrfil(&noerr);
-    //tqrcst(&noerr);
-    // Close data-file
+		if (noerr) abortprog(__LINE__,"tqfil",noerr);
+		
+		// Read cst-file
+    // tqrcst(&noerr);
+		// if (noerr) abortprog(__LINE__,"tqrcst",noerr);
+		
+    // Close file
     tqclos(unitno, &noerr);
+		if (noerr) abortprog(__LINE__,"tqclos",noerr);
 
     // get number of phases
     tqnop(&nphase, &noerr);
