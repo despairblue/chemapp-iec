@@ -46,7 +46,7 @@ int main ()
     // Open data-file for reading
     // tqopna("cosi.dat", unitno, &noerr);
     //tqopna("femgsio4.dat", unitno, &noerr);
-    tqopna("pitzer.dat", unitno, &noerr);
+    tqopna("cosi.dat", unitno, &noerr);
     //tqopnt("Test.cst",10,&noerr);
 
     // Read data-file

@@ -66,12 +66,15 @@ void table() {
     }
 }
 
-void eliminate_phases(int eliminate[]) {
-    LI i, noerr, nphases;
-    noerr = 0;
-    nphases = 0;
+//DB calc_error(int phase)
 
-    /* Get number of phases */
+void eliminate_phases(int eliminate[]) {
+	
+	LI noerr, nphases;
+	noerr = 0;
+	nphases = 0;
+	
+	/* Get number of phases */
     tqnop(&nphases, &noerr);
 
     for (int i = 0; i < nphases; i++) {
@@ -83,8 +86,8 @@ void eliminate_phases(int eliminate[]) {
 
 }
 
-void table_eliminate(int eliminated[]) {
 
+void table_eliminate(int eliminated[]) {
 
     LI i, noerr, nphase;
     noerr=0;
@@ -129,7 +132,6 @@ void table_count(DB total_amount[]) {
 
     LI noerr, nphase;
     DB amount, act;
-//    char name[TQSTRLEN];
 
 
     /* Retrieve and display the activities and equilibrium
@@ -224,3 +226,5 @@ void set_all(int arr[], int step) {
         }
     }
 }
+
+

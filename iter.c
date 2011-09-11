@@ -101,8 +101,6 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                 loop[i] = 0;
             }
 
-//            loop[nelements - 1] = 1;
-
             while (loop[0] <= step) {
 
                 sum = 0;
@@ -114,12 +112,9 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                 if (sum == step) {
                     set_all(loop, step);
 
-//                    tqshow(&noerr);
-//                    getchar();
-
                     darray2[0] = 0.0;
-                    tqcel(" ", 0, 0, darray2, &noerr);
-                    getchar();
+                    tqce(" ", 0, 0, darray2, &noerr);
+
                     table_count(total_amount);
 
                     table_eliminate(eliminated);
