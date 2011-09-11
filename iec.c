@@ -85,6 +85,8 @@ int main ()
     struct iteration_output od;
     od.time_taken = 0;
 
+
+
     // start iteration with all components
     puts("********************************************");
     puts("   Start calculation with all components.");
@@ -93,17 +95,18 @@ int main ()
     // run iteration with the parameters set in id
     run_iteration(id, &od);
 
-    // table();
     printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 
-		puts("\nPhases that could be eliminated:");
+		puts("\nPhases that that can't be elimated are marked with a 1:");
     for (int i = 0; i < nphase; ++i)
     {
         printf("%d: %d\n", i+1, od.eliminated[i]);
     }
 		printf("\n\n\n");
 
-    // start iteration without come phases
+
+
+    // start iteration without some phases
     puts("********************************************");
     puts("   Start calculation without some Phases.");
     puts("********************************************\n");
