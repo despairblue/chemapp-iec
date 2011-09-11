@@ -9,6 +9,7 @@
 
 #include "helpers.h"
 #include "stdio.h"
+#include "math.h"
 #include <stdlib.h>
 
 // =============
@@ -69,12 +70,12 @@ void table() {
 //DB calc_error(int phase)
 
 void eliminate_phases(int eliminate[]) {
-	
-	LI noerr, nphases;
-	noerr = 0;
-	nphases = 0;
-	
-	/* Get number of phases */
+
+    LI noerr, nphases;
+    noerr = 0;
+    nphases = 0;
+
+    /* Get number of phases */
     tqnop(&nphases, &noerr);
 
     for (int i = 0; i < nphases; i++) {
@@ -87,7 +88,7 @@ void eliminate_phases(int eliminate[]) {
 }
 
 
-void table_eliminate(int eliminated[], double margin) {
+void check_elimination(int eliminated[], double margin) {
 
     LI i, noerr, nphase;
     noerr=0;
@@ -125,7 +126,68 @@ void table_eliminate(int eliminated[], double margin) {
     }
 }
 
-void table_count(DB total_amount[]) {
+void biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest_error_so_far[]) {
+
+
+    LI noerr, nphase;
+    DB error;
+
+
+    /* Get number of phases */
+    tqnop(&nphase, &noerr);
+    
+    /*
+        TODO remove, only for debugging
+    */
+    // show_amounts(amounts);
+    // show_amounts(amounts_with_eliminations);
+    // show_amounts(biggest_error_so_far);
+    // getchar();
+
+    for (int i = 0; i < nphase; i++) {
+        error = fabs((amounts[i] - amounts_with_eliminations[i])) / amounts[i];
+        
+        /*
+            TODO remove, only for debugging
+        */
+        if(i == -1)
+        {
+            printf("|(%f - %f)| / %f = %f\n", amounts[i], amounts_with_eliminations[i], amounts[i], error);
+        }
+        
+        if(error > biggest_error_so_far[i])
+        {
+            biggest_error_so_far[i] = error;
+        }
+    }
+}
+
+void get_amounts(DB amounts[]) {
+
+
+    LI noerr, nphase;
+    DB amount;
+
+
+    /* Retrieve and display the equilibrium
+       amounts of all phases */
+
+
+    /* Get number of phases */
+    tqnop(&nphase, &noerr);
+
+    for (int i = 1; i <= nphase; i++) {
+        /* Get its equilibrium amount */
+        tqgetr("a",  i, 0, &amount, &noerr);
+
+
+        amounts[i-1] = amount;
+    }
+}
+
+
+
+void count_amounts(DB total_amount[]) {
 
 
     LI noerr, nphase;
@@ -152,7 +214,7 @@ void table_count(DB total_amount[]) {
     }
 }
 
-void table_show(DB total_amount[]) {
+void show_amounts(DB total_amount[]) {
 
     LI noerr, nphase;
     char name[TQSTRLEN];
@@ -180,7 +242,7 @@ void table_show(DB total_amount[]) {
 
 }
 
-void table_enter() {
+void enter_all_phases() {
 
 
     LI i, noerr, nphase;
@@ -210,7 +272,7 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
     *f = 0;
 }
 
-void set_all(int arr[], int step) {
+void set_all_ia(int arr[], int step) {
     LI numcon, noerr, nelements;
 
     /* Get number of elements */
@@ -220,7 +282,7 @@ void set_all(int arr[], int step) {
     {
         if(i!=6)
         {
-          tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
+            tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
         }
     }
 }

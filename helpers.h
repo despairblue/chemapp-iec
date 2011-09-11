@@ -11,12 +11,14 @@
 
 void abortprog( int, char[10], LI );
 void table();
-void table_eliminate(int[], double);
-void table_count(DB[]);
-void table_show(DB[]);
-void table_enter();
+void check_elimination(int[], double);
+void biggest_error_calc(DB[] , DB[] , DB[]);
+void get_amounts(DB[]);
+void count_amounts(DB[]);
+void show_amounts(DB[]);
+void enter_all_phases();
 void reset_vars(DB*, DB*, DB*, DB*, DB*, DB*);
-void set_all(int[], int);
+void set_all_ia(int[], int);
 // int contains(int**, DB, DB, DB, int, int);
 // void add(int**, DB, DB, DB, int, int);
 void eliminate_phases(int[]);

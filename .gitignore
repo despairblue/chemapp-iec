@@ -3,5 +3,6 @@
 *.DS_Store
 *.a
 *._*
+*.orig
 iec
 cacint.h

@@ -22,10 +22,10 @@ int main ()
     */
 
     LI   lint,               // all-purpose integer variable
-         noerr,              // error code return variable
-         nphase,             // number of phases in the loaded data-file
-         numcon,             // index of a condition set
-         unitno;             // FORTRAN unit number of the data-files
+     noerr,              // error code return variable
+     nphase,             // number of phases in the loaded data-file
+     numcon,             // index of a condition set
+     unitno;             // FORTRAN unit number of the data-files
 
     char *dstrptr;           // pointer to a string
 
@@ -51,15 +51,15 @@ int main ()
 
     // Read data-file
     tqrfil(&noerr);
-		if (noerr) abortprog(__LINE__,"tqfil",noerr);
-		
-		// Read cst-file
+    if (noerr) abortprog(__LINE__,"tqfil",noerr);
+
+    // Read cst-file
     // tqrcst(&noerr);
-		// if (noerr) abortprog(__LINE__,"tqrcst",noerr);
-		
+    // if (noerr) abortprog(__LINE__,"tqrcst",noerr);
+
     // Close file
     tqclos(unitno, &noerr);
-		if (noerr) abortprog(__LINE__,"tqclos",noerr);
+    if (noerr) abortprog(__LINE__,"tqclos",noerr);
 
     // get number of phases
     tqnop(&nphase, &noerr);
@@ -77,20 +77,24 @@ int main ()
     id.p_min = 1;
     id.p_max = 10;
 
-		id.step = 10;
-		id.margin = 0.999;
+    id.step = 10;
+    id.margin = 0.999;
 
     id.do_tqshow = 0;
     id.do_tqcenl = 0;
     id.do_table = 0;
     id.do_eliminate = 0;
-		id.do_test = 0;
+    id.do_test = 0;
+    id.do_calc_errors = 0;
 
-		id.eliminate = 0;
+    id.eliminate = 0;
 
     // output struct for the iteration
     struct iteration_output od;
     od.time_taken = 0;
+    od.eliminated = 0;
+    od.max_errors = 0;
+    od.total_errors = 0;
 
 
 
@@ -104,12 +108,12 @@ int main ()
 
     printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 
-		puts("\nPhases that that can't be elimated are marked with a 1:");
+    puts("\nPhases that that can't be eliminated are marked with a 1:");
     for (int i = 0; i < nphase; ++i)
     {
         printf("%d: %d\n", i+1, od.eliminated[i]);
     }
-		printf("\n\n\n");
+    printf("\n\n\n");
 
 
 
@@ -122,9 +126,10 @@ int main ()
     tqsetc("T", 0, 0, 1000, &numcon, &noerr);
     tqsetc("P", 0, 0, 1, &numcon, &noerr);
 
-		// id.do_tqshow = 1;
-		id.eliminate = od.eliminated;
+    // id.do_tqshow = 1;
+    id.eliminate = od.eliminated;
     id.do_eliminate = 1;
+    id.do_calc_errors = 1;
     run_iteration(id, &od);
 
     // table();

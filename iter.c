@@ -41,7 +41,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     int p_min = id.p_min;
     int p_max = id.p_max;
     int step  = id.step;
-		double margin = id.margin;
+    double margin = id.margin;
     LI numcon;
     DB darray2[2];
     LI noerr;
@@ -57,15 +57,33 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     // will be 1 for all phases not having any amount
     int *eliminated = malloc(nphases * sizeof(int));
+    
+    // containing the initial amounts of the elements
     int *loop = malloc(nelements * sizeof(int));
 
     // will contain the total amount of any phase
     DB *total_amount = malloc(nphases * sizeof(DB));
+    
+    // will contain the amounts for that state
+    DB *amounts = malloc(nphases * sizeof(DB));
+    
+    // will contain the amounts for that state with the eliminated phases
+    DB *amounts_with_eliminations = malloc(nphases * sizeof(DB));
+    
+    // will contain the total amount of any phase for the equilibrium with eliminated phases
+    DB *total_amount_with_eliminations = malloc(nphases * sizeof(DB));
+    
+    // will contain the biggest error a phase had
+    DB *biggest_error = malloc(nphases * sizeof(DB));
 
     // initializing arrays to zero
     for (int i = 0; i < nphases; ++i) {
         eliminated[i] = 0 ;
         total_amount[i] = 0;
+        amounts[i] = 0;
+        total_amount_with_eliminations[i] = 0;
+        amounts_with_eliminations[i] = 0;
+        biggest_error[i] = 0;
     }
 
     if (id.do_eliminate == 1) {
@@ -105,20 +123,53 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
             while (loop[0] <= step) {
 
                 sum = 0;
+                
                 for (LI i = 0; i < nelements; ++i)
                 {
                     sum += loop[i];
                 }
 
                 if (sum == step) {
-                    set_all(loop, step);
+                    // set initial amounts for all phases
+                    set_all_ia(loop, step);
+                    
+                    if (id.do_calc_errors == 0)
+                    {
+                        darray2[0] = 0.0;
+                        tqce(" ", 0, 0, darray2, &noerr);
 
-                    darray2[0] = 0.0;
-                    tqce(" ", 0, 0, darray2, &noerr);
+                        count_amounts(total_amount);
 
-                    table_count(total_amount);
-
-                    table_eliminate(eliminated, margin);
+                        if (id.do_eliminate == 0) {
+                            check_elimination(eliminated, margin);
+                        }
+                    } else {
+                        enter_all_phases();
+                        darray2[0] = 0.0;
+                        tqce(" ", 0, 0, darray2, &noerr);
+                        count_amounts(total_amount);
+                        get_amounts(amounts);
+                        /*
+                            TODO remove, only for debugging
+                        */
+                        // tqshow(&noerr);
+                        // table();
+                        // getchar();
+                        
+                        eliminate_phases(eliminate);
+                        darray2[0] = 0.0;
+                        tqce(" ", 0, 0, darray2, &noerr);
+                        count_amounts(total_amount_with_eliminations);
+                        get_amounts(amounts_with_eliminations);
+                        /*
+                            TODO remove, only for debugging
+                        */
+                        // tqshow(&noerr);
+                        // table();
+                        // getchar();
+                        
+                        biggest_error_calc(amounts, amounts_with_eliminations, biggest_error);
+                    }
                 }
 
                 next(loop, nelements, 0, step);
@@ -128,6 +179,25 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     // current time after iteration
     then = time(NULL);
+    
+    show_amounts(total_amount);
+
+    if (id.do_calc_errors == 1) {
+        
+        printf("\n\nAmounts with elimination:\n");
+        show_amounts(total_amount_with_eliminations);
+        
+        for(int i = 0; i < nphases; ++i)
+        {
+            total_amount_with_eliminations[i] = fabs((total_amount[i] - total_amount_with_eliminations[i])) / total_amount[i];
+        }
+        
+        printf("\n\nTotal Errors:\n");
+        show_amounts(total_amount_with_eliminations);
+        
+        printf("\n\nBiggest Errors:\n");
+        show_amounts(biggest_error);
+    }
 
     // Print ChemSage output table
     if (id.do_tqcenl == 1) {
@@ -145,6 +215,5 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     (*od).time_taken = then - now;
     (*od).eliminated = eliminated;
-
-    table_show(total_amount);
+    (*od).total_errors = total_amount_with_eliminations;
 }
