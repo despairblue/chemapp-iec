@@ -41,6 +41,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     int p_min = id.p_min;
     int p_max = id.p_max;
     int step  = id.step;
+		double margin = id.margin;
     LI numcon;
     DB darray2[2];
     LI noerr;
@@ -117,7 +118,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
 
                     table_count(total_amount);
 
-                    table_eliminate(eliminated);
+                    table_eliminate(eliminated, margin);
                 }
 
                 next(loop, nelements, 0, step);

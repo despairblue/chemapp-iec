@@ -78,6 +78,7 @@ int main ()
     id.p_max = 10;
 
 		id.step = 10;
+		id.margin = 0.999;
 
     id.do_tqshow = 0;
     id.do_tqcenl = 0;

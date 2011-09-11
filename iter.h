@@ -22,6 +22,7 @@ struct iteration_input {
     int p_max;
 
     int step;
+		double margin;
 
     int do_tqshow;
     int do_tqcenl;

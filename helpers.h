@@ -11,7 +11,7 @@
 
 void abortprog( int, char[10], LI );
 void table();
-void table_eliminate(int[]);
+void table_eliminate(int[], double);
 void table_count(DB[]);
 void table_show(DB[]);
 void table_enter();

@@ -87,7 +87,7 @@ void eliminate_phases(int eliminate[]) {
 }
 
 
-void table_eliminate(int eliminated[]) {
+void table_eliminate(int eliminated[], double margin) {
 
     LI i, noerr, nphase;
     noerr=0;
@@ -118,9 +118,7 @@ void table_eliminate(int eliminated[]) {
         tqgetr("ac",  i, 0, &act, &noerr);
 
 
-        // if ((amount == 0) && (act == 0)) {
-        if ((amount != 0)) {
-            // tqcsp(i, "eliminated", &noerr);
+        if ((amount - margin > 0)) {
             eliminated[i-1] = 1;
         }
 
