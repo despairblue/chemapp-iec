@@ -126,16 +126,11 @@ void check_elimination(int eliminated[], double margin) {
     }
 }
 
-void biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest_error_so_far[]) {
+DB calc_error(DB amounts, DB amounts_with_eliminations) {
 
 
-    LI noerr, nphase;
     DB error;
 
-
-    /* Get number of phases */
-    tqnop(&nphase, &noerr);
-    
     /*
         TODO remove, only for debugging
     */
@@ -144,22 +139,46 @@ void biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest
     // show_amounts(biggest_error_so_far);
     // getchar();
 
+    error = fabs((amounts - amounts_with_eliminations)) / amounts;
+
+    /*
+        TODO remove, only for debugging
+    */
+    // printf("|(%f - %f)| / %f = %f\n", amounts, amounts_with_eliminations, amounts, error);
+    // getchar();
+
+    return error;
+}
+
+// ===============================================
+// = Returns 1 if there is an error otherwhise 0 =
+// ===============================================
+int biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest_error_so_far[]) {
+
+
+    int retval = 0;
+    LI noerr, nphase;
+    DB error;
+
+
+    /* Get number of phases */
+    tqnop(&nphase, &noerr);
+
     for (int i = 0; i < nphase; i++) {
-        error = fabs((amounts[i] - amounts_with_eliminations[i])) / amounts[i];
+        error = calc_error(amounts[i], amounts_with_eliminations[i]);
         
-        /*
-            TODO remove, only for debugging
-        */
-        if(i == -1)
+        if(error > 0)
         {
-            printf("|(%f - %f)| / %f = %f\n", amounts[i], amounts_with_eliminations[i], amounts[i], error);
+            retval = 1;
         }
-        
+
         if(error > biggest_error_so_far[i])
         {
             biggest_error_so_far[i] = error;
         }
     }
+    
+    return retval;
 }
 
 void get_amounts(DB amounts[]) {

@@ -12,7 +12,8 @@
 void abortprog( int, char[10], LI );
 void table();
 void check_elimination(int[], double);
-void biggest_error_calc(DB[] , DB[] , DB[]);
+DB calc_error(DB, DB);
+int biggest_error_calc(DB[] , DB[] , DB[]);
 void get_amounts(DB[]);
 void count_amounts(DB[]);
 void show_amounts(DB[]);
