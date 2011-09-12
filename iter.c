@@ -168,7 +168,19 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                         // table();
                         // getchar();
                         
-                        biggest_error_calc(amounts, amounts_with_eliminations, biggest_error);
+                        if (biggest_error_calc(amounts, amounts_with_eliminations, biggest_error) == 1) {
+                            printf("\nElimination lead to an error for this state\n");
+                            tqshow(&noerr);
+                            puts("");
+                            for(size_t i = 0; i < nphases; ++i)
+                            {
+                                printf("%d: %14.5f\n", i, calc_error(amounts[i], amounts_with_eliminations[i]));
+                            }
+                            /*
+                                TODO remove, only for debugging
+                            */
+                            // getchar();
+                        }
                     }
                 }
 
