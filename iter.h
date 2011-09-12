@@ -35,6 +35,8 @@ struct iteration_input {
     int* eliminate;
 };
 
+#define ITERATION_INPUT_DEFAULT {0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0};
+
 struct iteration_output {
     LI time_taken;
     int* eliminated;

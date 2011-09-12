@@ -73,23 +73,23 @@ int main ()
     tqshow(&noerr);
 
     // input struct for the iteration
-    struct iteration_input id;
+    struct iteration_input id = ITERATION_INPUT_DEFAULT;
     id.t_min = 1000;
     id.t_max = 1010;
     id.p_min = 1;
     id.p_max = 10;
 
-    id.step = 10;
+    // id.step = 10;
     id.margin = 0.999;
 
-    id.do_tqshow = 0;
-    id.do_tqcenl = 0;
-    id.do_table = 0;
-    id.do_eliminate = 0;
-    id.do_test = 0;
-    id.do_calc_errors = 0;
+    // id.do_tqshow = 0;
+    // id.do_tqcenl = 0;
+    // id.do_table = 0;
+    // id.do_eliminate = 0;
+    // id.do_test = 0;
+    // id.do_calc_errors = 0;
 
-    id.eliminate = 0;
+    // id.eliminate = 0;
 
     // output struct for the iteration
     struct iteration_output od;
