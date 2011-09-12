@@ -245,4 +245,6 @@ char* error_code_to_str(int error_code) {
         return "Error Code 1: do_eliminate and eliminate must be set for do_calc_errors as well!";
         break;
     }
+    
+    return "";
 }
