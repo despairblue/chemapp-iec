@@ -42,5 +42,6 @@ struct iteration_output {
     double* total_errors;
 };
 
-void run_iteration(struct iteration_input, struct iteration_output*);
+int run_iteration(struct iteration_input, struct iteration_output*);
+char* error_code_to_str(int);
 

@@ -26,6 +26,8 @@ int main ()
      nphase,             // number of phases in the loaded data-file
      numcon,             // index of a condition set
      unitno;             // FORTRAN unit number of the data-files
+     
+    int error_code; 
 
     char *dstrptr;           // pointer to a string
 
@@ -96,15 +98,17 @@ int main ()
     od.max_errors = 0;
     od.total_errors = 0;
 
-
-
     // start iteration with all components
     puts("********************************************");
     puts("   Start calculation with all components.");
     puts("********************************************\n");
 
     // run iteration with the parameters set in id
-    run_iteration(id, &od);
+    error_code = run_iteration(id, &od);
+    if(error_code != 0)
+    {
+        printf("%s\n", error_code_to_str(error_code));
+    }
 
     printf("\nTime: %li\n___________________________\n\n", od.time_taken);
 
@@ -130,7 +134,11 @@ int main ()
     id.eliminate = od.eliminated;
     id.do_eliminate = 1;
     id.do_calc_errors = 1;
-    run_iteration(id, &od);
+    error_code = run_iteration(id, &od);
+    if(error_code != 0)
+    {
+        printf("%s\n", error_code_to_str(error_code));
+    }
 
     // table();
     printf("\nTime: %li\n___________________________\n\n", od.time_taken);

@@ -34,7 +34,10 @@ void next(int arr[], int size, int lower_bound, int upper_bound) {
     }
 }
 
-void run_iteration(struct iteration_input id, struct iteration_output* od) {
+// ============================
+// = May return an error code =
+// ============================
+int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     int t_min = id.t_min;
     int t_max = id.t_max;
@@ -144,6 +147,12 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                             check_elimination(eliminated, margin);
                         }
                     } else {
+                        // Check for required options and input
+                        if( (id.do_eliminate != 1) || (eliminate == 0) )
+                        {
+                            return 1;
+                        }
+                        
                         enter_all_phases();
                         darray2[0] = 0.0;
                         tqce(" ", 0, 0, darray2, &noerr);
@@ -172,7 +181,7 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
                             printf("\nElimination lead to an error for this state\n");
                             tqshow(&noerr);
                             puts("");
-                            for(size_t i = 0; i < nphases; ++i)
+                            for(int i = 0; i < nphases; ++i)
                             {
                                 printf("%d: %14.5f\n", i, calc_error(amounts[i], amounts_with_eliminations[i]));
                             }
@@ -228,4 +237,12 @@ void run_iteration(struct iteration_input id, struct iteration_output* od) {
     (*od).time_taken = then - now;
     (*od).eliminated = eliminated;
     (*od).total_errors = total_amount_with_eliminations;
+}
+
+char* error_code_to_str(int error_code) {
+    switch (error_code) {
+        case 1:
+        return "Error Code 1: do_eliminate and eliminate must be set for do_calc_errors as well!";
+        break;
+    }
 }
