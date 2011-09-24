@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "cacint.h"
+#include "lib32/cacint.h"
 #include "iter.h"
 #include "helpers.h"
 
@@ -48,16 +48,16 @@ int main ()
     // Open data-file for reading
     // tqopna("pitzer.dat", unitno, &noerr);
     // tqopna("femgsio4.dat", unitno, &noerr);
-    tqopna("cosi.dat", unitno, &noerr);
-    // tqopnt("Test.cst",10,&noerr);
+    // tqopna("cosi.dat", unitno, &noerr);
+    tqopnt("Test.cst",10,&noerr);
 
     // Read data-file
-    tqrfil(&noerr);
-    if (noerr) abortprog(__LINE__,"tqfil",noerr);
+    //tqrfil(&noerr);
+    //if (noerr) abortprog(__LINE__,"tqfil",noerr);
 
     // Read cst-file
-    // tqrcst(&noerr);
-    // if (noerr) abortprog(__LINE__,"tqrcst",noerr);
+    tqrcst(&noerr);
+    if(noerr) abortprog(__LINE__,"tqrcst",noerr);
 
     // Close file
     tqclos(unitno, &noerr);
