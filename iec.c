@@ -46,22 +46,22 @@ int main ()
     tqgio("FILE", &unitno, &noerr);
 
     // Open data-file for reading
-    // tqopna("pitzer.dat", unitno, &noerr);
+    // tqopna("data/pitzer.dat", unitno, &noerr);
     // tqopna("femgsio4.dat", unitno, &noerr);
-    //tqopna("data/cosi.dat", unitno, &noerr);
-    tqopnt("data/Test.cst",10,&noerr);
+    tqopna("data/cosi.dat", unitno, &noerr);
+    // tqopnt("data/Test.cst",10,&noerr);
 
     // Read data-file
-    //tqrfil(&noerr);
-    //if (noerr) abortprog(__LINE__,"tqfil",noerr);
+    tqrfil(&noerr);
+    if (noerr) abortprog(__LINE__,"tqfil",noerr, __FILE__);
 
     // Read cst-file
-    tqrcst(&noerr);
-    if (noerr) abortprog(__LINE__,"tqrcst",noerr);
+    // tqrcst(&noerr);
+    // if (noerr) abortprog(__LINE__,"tqrcst",noerr, __FILE__);
 
     // Close file
     tqclos(unitno, &noerr);
-    if (noerr) abortprog(__LINE__,"tqclos",noerr);
+    if (noerr) abortprog(__LINE__,"tqclos",noerr, __FILE__);
 
     // get number of phases
     tqnop(&nphase, &noerr);
@@ -79,17 +79,12 @@ int main ()
     id.p_min = 1;
     id.p_max = 10;
 
-    // id.step = 10;
-    id.margin = 0.999;
+    id.margin = 0;
 
-    // id.do_tqshow = 0;
-    // id.do_tqcenl = 0;
-    // id.do_table = 0;
-    // id.do_eliminate = 0;
-    // id.do_test = 0;
-    // id.do_calc_errors = 0;
-
-    // id.eliminate = 0;
+    id.do_ignore_elements = 1;
+    // int test[] = {1,1,1,1,1,0};
+    int test[] = {1,1,0};
+    id.ignored_elements = test;
 
     // output struct for the iteration
     struct iteration_output od;
@@ -117,9 +112,11 @@ int main ()
     {
         printf("%d: %d\n", i+1, od.eliminated[i]);
     }
+    show_total_chemapp_errors(1);
     printf("\n\n\n");
 
-
+	// TODO: debugging stuff
+	// exit(0);
 
     // start iteration without some phases
     puts("********************************************");

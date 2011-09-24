@@ -16,26 +16,33 @@
 	Takes all arguments needed for the iteration
 */
 struct iteration_input {
-    int t_min;
-    int t_max;
-    int p_min;
-    int p_max;
+    int t_min;              //temp to start with
+    int t_max;              //temp to stop with
+    int p_min;              //pressure to start with
+    int p_max;              //pressure to stop with
 
-    int step;
-    double margin;
+    int step;               //(1/step) == increment
+    double margin;          //how off can a result be from zero
+                            //to still be assumed zero  
 
-    int do_tqshow;
-    int do_tqcenl;
-    int do_table;
-    int do_eliminate;
-    int do_test;
-    // do_eliminate has to be set to 1 as well and eliminate too!
-    int do_calc_errors;
+    int do_tqshow;          //call tqshow() after each iteration
+    int do_tqcenl;          //call tqcenl() instead of tqce()
+    int do_table;           //call table() after each iteration
+    int do_eliminate;       //eliminate phases in 
+                            //eliminate[]
+    int do_ignore_elements; //ignore elements in ignored_elements[]
+    int do_test;            //no idea what for
+    
+    int do_calc_errors;     //calculate average error
+                            //implies do_eliminate == 1
 
-    int* eliminate;
+    int* eliminate;         //length: number of phases
+                            //0 means the phase will be eliminated
+    int* ignored_elements;  //length: number of elements
+                            //0 means the element will be ignored
 };
 
-#define ITERATION_INPUT_DEFAULT {0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0};
+#define ITERATION_INPUT_DEFAULT {0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 struct iteration_output {
     LI time_taken;

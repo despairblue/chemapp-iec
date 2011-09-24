@@ -15,20 +15,21 @@
 
 #include "math.h"
 
-void next(int arr[], int size, int lower_bound, int upper_bound) {
+void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_elements, int nelements) {
     int pointer = size - 1;
 
     if (pointer < 0)
     {
         arr[0]++;
     }
-    if (pointer==5)
+    if ( check_for_ignored_element(pointer, ignored_elements) )
     {
-        pointer=pointer-1;
+        // skip element if it should be ignored
+        pointer--;
     }
     if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
         arr[pointer] = lower_bound;
-        next(arr, pointer, lower_bound, upper_bound);
+        next(arr, pointer, lower_bound, upper_bound, ignored_elements, nelements);
     } else {
         arr[pointer]++;
     }
@@ -49,6 +50,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     DB darray2[2];
     LI noerr;
     int* eliminate = id.eliminate;
+    int* ignored_elements = id.ignored_elements;
 
     int now, then, count_all, count_done, sum;
     LI nphases, nelements;
@@ -92,6 +94,14 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     if (id.do_eliminate == 1) {
         eliminate_phases(eliminate);
     }
+    
+    if ( (id.do_ignore_elements == 1) && (ignored_elements == 0) ) {
+        // if do_ignore_elements is set but ignored_elements[] isn't, exit
+        return 2;
+    } else if (id.do_ignore_elements == 0) {
+        // if do_ignore_elements isn't set, set ignored_elements to -1
+        ignored_elements = (int*) -1; 
+    }
 
     // current time before iteration
     now = time(NULL);
@@ -134,13 +144,14 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
                 if (sum == step) {
                     // set initial amounts for all phases
-                    set_all_ia(loop, step);
+                    set_all_ia(loop, step, ignored_elements);
                     
                     if (id.do_calc_errors == 0)
                     {
                         darray2[0] = 0.0;
                         tqce(" ", 0, 0, darray2, &noerr);
-
+						if (noerr) abortprog(__LINE__,"tqce",noerr, __FILE__);
+                        
                         count_amounts(total_amount);
 
                         if (id.do_eliminate == 0) {
@@ -148,7 +159,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         }
                     } else {
                         // Check for required options and input
-                        if( (id.do_eliminate != 1) || (eliminate == 0) )
+                        if( eliminate == 0 )
                         {
                             return 1;
                         }
@@ -193,7 +204,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                     }
                 }
 
-                next(loop, nelements, 0, step);
+                next(loop, nelements, 0, step, ignored_elements, nelements);
             }
         }
     }
@@ -244,7 +255,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 char* error_code_to_str(int error_code) {
     switch (error_code) {
         case 1:
-        return "Error Code 1: do_eliminate and eliminate must be set for do_calc_errors as well!";
+        return "Error Code 1: eliminate[] must be set for do_calc_errors!";
         break;
     }
     

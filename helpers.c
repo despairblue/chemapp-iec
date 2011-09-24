@@ -19,11 +19,53 @@
 	Reports the error number and the routine it occurred in before it exits
 	Though i don't use it.
 */
-void abortprog(int lineno, char sr_name[10], LI error_no) {
-    fprintf(stdout,"\nChemApp error no. %i occurred when calling %s.\n"
-            "Aborting on line %i of %s .\n", error_no, sr_name,
-            lineno, __FILE__);
-    exit(error_no);
+void abortprog(int lineno, char sr_name[10], LI error_no, char* file) {
+	LI noerr;
+	char answer;
+	// -1 for not asked, 0 for not silent, 1 for silent
+	static int silent = -1;
+	
+	// count total errors
+	show_total_chemapp_errors(0);
+    
+    if (silent == -1) {
+        fprintf(stdout,"\nChemApp error no. %i occurred when calling %s\non line %i of %s .\n", error_no, sr_name, lineno, file);
+        puts("Ignore further errors [yN]?");
+        fflush(NULL);
+        answer = getchar();
+        
+        if (answer == 'y') {
+            silent = 1;
+        } else {
+            silent = 0;
+        }
+    }
+    
+    if (silent == 0) {
+        fprintf(stdout,"\nChemApp error no. %i occurred when calling %s\non line %i of %s .\n", error_no, sr_name, lineno, file);
+        tqshow(&noerr);
+        
+        puts("Exit [yN]?");
+        fflush(NULL);
+        answer = getchar();
+        if (answer == 'y') {
+            exit(error_no);   
+        }
+    }
+}
+
+int show_total_chemapp_errors (int show_them) {
+
+    static int count = 0;
+	
+    if (show_them) {
+        printf("\nTotal chemapp errors: %i\n", count);
+    } else {
+        count++;
+    }
+    
+    return count;
+    
 }
 
 void table() {
@@ -291,7 +333,7 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
     *f = 0;
 }
 
-void set_all_ia(int arr[], int step) {
+void set_all_ia(int arr[], int step, int* ignored_elements) {
     LI numcon, noerr, nelements;
 
     /* Get number of elements */
@@ -299,11 +341,23 @@ void set_all_ia(int arr[], int step) {
 
     for (int i = 1; i <= nelements; i++)
     {
-        if(i!=6)
-        {
-            tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
-        }
+        // TODO: debugging
+    	// printf("%i: %f\n", arr[i-1], ((DB)arr[i-1]) / step);		
+		
+		if( check_for_ignored_element(i-1, ignored_elements) == 0 ) {
+			tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
+			if (noerr) abortprog(__LINE__,"tqsetc",noerr, __FILE__);
+		}
     }
 }
 
-
+int check_for_ignored_element(int element, int* ignored_elements) {
+    if ( ((long int)ignored_elements) != -1 ) {
+        if (ignored_elements[element] == 0) {
+            return 1;
+        }
+    }
+    
+    return 0;
+    
+}
