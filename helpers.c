@@ -20,7 +20,7 @@
 	Though i don't use it.
 */
 void abortprog(int lineno, char sr_name[10], LI error_no) {
-    fprintf(stdout,"\nChemApp error no. %li occurred when calling %s.\n"
+    fprintf(stdout,"\nChemApp error no. %i occurred when calling %s.\n"
             "Aborting on line %i of %s .\n", error_no, sr_name,
             lineno, __FILE__);
     exit(error_no);

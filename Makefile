@@ -9,8 +9,8 @@ EXTRACLIBS= -lf2c -lm
 EXTRALDFLAGS = -lg2c
 EXTRALDLIBS =
 
-#LIBS = lib/libChemAppC.a lib/libSChemApp.a
-LIBS = lib/libChemAppC.a lib/libLChemApp.a
+LIBS = lib64/libChemAppC.a lib64/libSChemApp.a
+#LIBS = lib/libChemAppC.a lib/libLChemApp.a
 
 # This examples Makefile uses the STATIC version of ChemApp. If your
 # distribution also contains the SHARED version of the ChemApp

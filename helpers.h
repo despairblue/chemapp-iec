@@ -7,7 +7,7 @@
 //
 
 
-#include "cacint.h"
+#include "lib64/cacint.h"
 
 void abortprog( int, char[10], LI );
 void table();

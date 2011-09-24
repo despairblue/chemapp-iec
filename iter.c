@@ -237,6 +237,8 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     (*od).time_taken = then - now;
     (*od).eliminated = eliminated;
     (*od).total_errors = total_amount_with_eliminations;
+    
+    return 0;
 }
 
 char* error_code_to_str(int error_code) {

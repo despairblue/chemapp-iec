@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "cacint.h"
+#include "lib64/cacint.h"
 #include "iter.h"
 #include "helpers.h"
 
@@ -48,7 +48,7 @@ int main ()
     // Open data-file for reading
     // tqopna("pitzer.dat", unitno, &noerr);
     // tqopna("femgsio4.dat", unitno, &noerr);
-    tqopna("cosi.dat", unitno, &noerr);
+    tqopna("data/cosi.dat", unitno, &noerr);
     // tqopnt("Test.cst",10,&noerr);
 
     // Read data-file
@@ -65,9 +65,9 @@ int main ()
 
     // get number of phases
     tqnop(&nphase, &noerr);
-    printf("Number of phases: %li\n", nphase);
+    printf("Number of phases: %i\n", nphase);
     tqnosc(&lint,&noerr);
-    printf("Number of elements: %li\n", lint);
+    printf("Number of elements: %i\n", lint);
     tqcsu("Amount", "gram", &noerr);
     //tqcsu("Amount", "mol", &noerr);
     tqshow(&noerr);
@@ -110,7 +110,7 @@ int main ()
         printf("%s\n", error_code_to_str(error_code));
     }
 
-    printf("\nTime: %li\n___________________________\n\n", od.time_taken);
+    printf("\nTime: %i\n___________________________\n\n", od.time_taken);
 
     puts("\nPhases that that can't be eliminated are marked with a 1:");
     for (int i = 0; i < nphase; ++i)
@@ -141,7 +141,7 @@ int main ()
     }
 
     // table();
-    printf("\nTime: %li\n___________________________\n\n", od.time_taken);
+    printf("\nTime: %i\n___________________________\n\n", od.time_taken);
 
     return 0;
 }
