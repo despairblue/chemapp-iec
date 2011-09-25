@@ -82,20 +82,20 @@ int main ()
     // id.margin = 0.999;
 
     id.do_ignore_ranges = 1;
-    int ign_ran[3][2] = {{2, 4},{6, 7},{0, 10}};
-    id.ignored_ranges = ign_ran;
+    int min_ign_ran[] = {2, 6, 0};
+    int max_ign_ran[] = {4, 7, 10};
+    id.min_ignored_ranges = min_ign_ran;
+    id.max_ignored_ranges = max_ign_ran;
     
     // id.do_ignore_elements = 1;
     // int test[] = {1,1,1,1,1,0};
     // int test[] = {1,1,0};
     // id.ignored_elements = test;
+    // id.do_eliminate = 1;
+    // id.do_calc_errors = 1;
 
     // output struct for the iteration
-    struct iteration_output od;
-    od.time_taken = 0;
-    od.eliminated = 0;
-    od.max_errors = 0;
-    od.total_errors = 0;
+    struct iteration_output od = ITERATION_OUTPUT_DEFAULT;
 
     // start iteration with all components
     puts("********************************************");
@@ -107,6 +107,7 @@ int main ()
     if(error_code != 0)
     {
         printf("%s\n", error_code_to_str(error_code));
+        exit(error_code);
     }
 
     printf("\nTime: %i\n___________________________\n\n", od.time_taken);

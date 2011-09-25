@@ -352,7 +352,7 @@ void set_all_ia(int arr[], int step, int* ignored_elements) {
 }
 
 int check_for_ignored_element(int element, int* ignored_elements) {
-    if ( ((long int)ignored_elements) != -1 ) {
+    if ( ((long int)ignored_elements) != 0 ) {
         if (ignored_elements[element] == 0) {
             return 1;
         }

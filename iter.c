@@ -15,30 +15,18 @@
 
 #include "math.h"
 
-void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_elements, int nelements) {
-    int pointer = size - 1;
-
-    if (pointer < 0)
-    {
-        arr[0]++;
-    }
-    if ( check_for_ignored_element(pointer, ignored_elements) )
-    {
-        // skip element if it should be ignored
-        pointer--;
-    }
-    if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
-        arr[pointer] = lower_bound;
-        next(arr, pointer, lower_bound, upper_bound, ignored_elements, nelements);
-    } else {
-        arr[pointer]++;
-    }
-}
+int check_input(struct iteration_input);
+void next(int[], int, int, int, int*, int);
 
 // ============================
 // = May return an error code =
 // ============================
 int run_iteration(struct iteration_input id, struct iteration_output* od) {
+
+    int rtn_val = check_input(id);
+    if (rtn_val) {
+        return rtn_val;
+    }
 
     int t_min = id.t_min;
     int t_max = id.t_max;
@@ -93,14 +81,6 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     if (id.do_eliminate == 1) {
         eliminate_phases(eliminate);
-    }
-    
-    if ( (id.do_ignore_elements == 1) && (ignored_elements == 0) ) {
-        // if do_ignore_elements is set but ignored_elements[] isn't, exit
-        return 2;
-    } else if (id.do_ignore_elements == 0) {
-        // if do_ignore_elements isn't set, set ignored_elements to -1
-        ignored_elements = (int*) -1; 
     }
 
     // current time before iteration
@@ -158,11 +138,6 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                             check_elimination(eliminated, margin);
                         }
                     } else {
-                        // Check for required options and input
-                        if( eliminate == 0 )
-                        {
-                            return 1;
-                        }
                         
                         enter_all_phases();
                         darray2[0] = 0.0;
@@ -252,12 +227,69 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     return 0;
 }
 
+int check_input(struct iteration_input id) {
+
+    // if do_ignore_elements is set but ignored_elements[] isn't, retur error code
+    if ( (id.do_ignore_elements == 1) && (id.ignored_elements == 0) ) {
+        return 2;
+    }
+    
+    // if do_calc_errors is set but eliminate[] isn't, ...
+    if( ( id.do_calc_errors == 1) && (id.eliminate == 0) ) {
+        return 1;
+    }
+    
+    // if do_eliminate is set but eliminate[] isn't, ...
+    if ( (id.do_eliminate == 1) && (id.eliminate == 0) ) {
+        return 3;
+    }
+    
+    // if do_ignore_ranges is set but ignored_ranges[] isn't, ...
+    if ( (id.do_ignore_ranges == 1) && ( (id.min_ignored_ranges == 0) || (id.max_ignored_ranges == 0) ) ) {
+        return 4;
+    }
+ 
+    return 0;
+    
+}
+
 char* error_code_to_str(int error_code) {
+    
     switch (error_code) {
         case 1:
-        return "Error Code 1: eliminate[] must be set for do_calc_errors!";
-        break;
+            return "Error Code 1: eliminate[] must be set for do_calc_errors!";
+            break;
+        case 2:
+            return "Error Code 2: ignored_elements[] must be set for do_ignore_elements!";
+            break;        
+        case 3:
+            return "Error Code 3: eliminate[] must be set for do_eliminate!";
+            break;
+        case 4:
+            return "Error Code 4: [min/max]_ignored_ranges[] must be set for do_ignore_ranges!";
+            break;
     }
     
     return "";
+    
+}
+
+void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_elements, int nelements) {
+    int pointer = size - 1;
+
+    if (pointer < 0)
+    {
+        arr[0]++;
+    }
+    if ( check_for_ignored_element(pointer, ignored_elements) )
+    {
+        // skip element if it should be ignored
+        pointer--;
+    }
+    if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
+        arr[pointer] = lower_bound;
+        next(arr, pointer, lower_bound, upper_bound, ignored_elements, nelements);
+    } else {
+        arr[pointer]++;
+    }
 }
