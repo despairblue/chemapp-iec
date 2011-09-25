@@ -31,6 +31,7 @@ struct iteration_input {
     int do_eliminate;       //eliminate phases in 
                             //eliminate[]
     int do_ignore_elements; //ignore elements in ignored_elements[]
+    int do_ignore_ranges;   //
     int do_test;            //no idea what for
     
     int do_calc_errors;     //calculate average error
@@ -40,9 +41,16 @@ struct iteration_input {
                             //0 means the phase will be eliminated
     int* ignored_elements;  //length: number of elements
                             //0 means the element will be ignored
+    int**ignored_ranges;    //AxB: 
+                            //A = number of elements
+                            //B = 2
+                            // Ex.: ignored_ranges = {{2, 4}, {6, 7}}
+                            // step = 10
+                            // only equilibriums for e1 between 0.2 and 0.4
+                            // and e2 between 0.6 and 0.7 will be solved
 };
 
-#define ITERATION_INPUT_DEFAULT {0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#define ITERATION_INPUT_DEFAULT {0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 struct iteration_output {
     LI time_taken;

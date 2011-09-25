@@ -79,12 +79,16 @@ int main ()
     id.p_min = 1;
     id.p_max = 10;
 
-    id.margin = 0;
+    // id.margin = 0.999;
 
-    id.do_ignore_elements = 1;
+    id.do_ignore_ranges = 1;
+    int ign_ran[3][2] = {{2, 4},{6, 7},{0, 10}};
+    id.ignored_ranges = ign_ran;
+    
+    // id.do_ignore_elements = 1;
     // int test[] = {1,1,1,1,1,0};
-    int test[] = {1,1,0};
-    id.ignored_elements = test;
+    // int test[] = {1,1,0};
+    // id.ignored_elements = test;
 
     // output struct for the iteration
     struct iteration_output od;
@@ -116,7 +120,7 @@ int main ()
     printf("\n\n\n");
 
 	// TODO: debugging stuff
-	// exit(0);
+	exit(0);
 
     // start iteration without some phases
     puts("********************************************");
