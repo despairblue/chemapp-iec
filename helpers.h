@@ -25,3 +25,5 @@ void set_all_ia(int[], int, int*);
 // void add(int**, DB, DB, DB, int, int);
 void eliminate_phases(int[]);
 int check_for_ignored_element(int, int*);
+int sum_array(int[], int);
+int check_for_range(int[], int[], int[], int);

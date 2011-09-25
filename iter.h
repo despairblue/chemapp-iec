@@ -31,18 +31,18 @@ struct iteration_input {
     int do_eliminate;           //eliminate phases in 
                                 //eliminate[]
     int do_ignore_elements;     //ignore elements in ignored_elements[]
-    int do_ignore_ranges;       //ignore ranges set in min/max_ignored_ranges[]
+    int do_set_ranges;          //only calculate ranges set in min/max_set_ranges[]
     int do_test;                //no idea what for
     
     int do_calc_errors;         //calculate average error
                                 //implies do_eliminate == 1
 
-    int* eliminate;             //length: number of phases
+    int* eliminated_phases;             //length: number of phases
                                 //0 means the phase will be eliminated
     int* ignored_elements;      //length: number of elements
                                 //0 means the element will be ignored
-    int* min_ignored_ranges;    //length: number of elements
-    int* max_ignored_ranges;    //length: number of elements
+    int* min_set_ranges;        //length: number of elements
+    int* max_set_ranges;        //length: number of elements
                                 // Ex.: min_ignored_ranges = {2, 6}
                                 // Ex.: max_ignored_ranges = {4, 7}
                                 // step = 10
@@ -54,7 +54,7 @@ struct iteration_input {
 
 struct iteration_output {
     LI time_taken;
-    int* eliminated;
+    int* eliminated_phases;
     double* max_errors;
     double* total_errors;
 };
@@ -63,4 +63,4 @@ struct iteration_output {
 
 int run_iteration(struct iteration_input, struct iteration_output*);
 char* error_code_to_str(int);
-
+void print_settings(struct iteration_input, int, int);

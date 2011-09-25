@@ -361,3 +361,27 @@ int check_for_ignored_element(int element, int* ignored_elements) {
     return 0;
     
 }
+
+int sum_array(int arr[], int n) {
+    int sum = 0;
+
+    for (int i = 0; i < n; ++i)
+    {
+        sum += arr[i];
+    }
+    
+    return sum;
+}
+
+// ================================================
+// = Returns 0 if out any element is out of range =
+// ================================================
+int check_for_range(int arr[], int min_set_ranges[], int max_set_ranges[], int nelements) {
+    for (int i = 0; i < nelements; i++) {
+        if ( (arr[i] < min_set_ranges[i]) || (arr[i] > max_set_ranges[i]) ) {
+            return 0;
+        };
+    }
+    
+    return 1;
+}

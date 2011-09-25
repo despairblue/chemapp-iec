@@ -81,26 +81,30 @@ int main ()
 
     // id.margin = 0.999;
 
-    id.do_ignore_ranges = 1;
-    int min_ign_ran[] = {2, 6, 0};
-    int max_ign_ran[] = {4, 7, 10};
-    id.min_ignored_ranges = min_ign_ran;
-    id.max_ignored_ranges = max_ign_ran;
+    // id.do_set_ranges = 1;
+    int min_set_ran[] = {0, 0, 0};
+    int max_set_ran[] = {10, 10, 10};
+    id.min_set_ranges = min_set_ran;
+    id.max_set_ranges = max_set_ran;
     
-    // id.do_ignore_elements = 1;
+    id.do_ignore_elements = 1;
     // int test[] = {1,1,1,1,1,0};
-    // int test[] = {1,1,0};
-    // id.ignored_elements = test;
+    int test[] = {0,1,1};
+    id.ignored_elements = test;
     // id.do_eliminate = 1;
+    // id.eliminate = test;
     // id.do_calc_errors = 1;
 
     // output struct for the iteration
     struct iteration_output od = ITERATION_OUTPUT_DEFAULT;
 
     // start iteration with all components
-    puts("********************************************");
-    puts("   Start calculation with all components.");
-    puts("********************************************\n");
+    puts("******************************************");
+    puts("* Start calculation with all components. *");
+    puts("******************************************\n");
+
+    // print settings
+    print_settings(id, 3, 8);
 
     // run iteration with the parameters set in id
     error_code = run_iteration(id, &od);
@@ -115,27 +119,33 @@ int main ()
     puts("\nPhases that that can't be eliminated are marked with a 1:");
     for (int i = 0; i < nphase; ++i)
     {
-        printf("%d: %d\n", i+1, od.eliminated[i]);
+        printf("%d: %d\n", i+1, od.eliminated_phases[i]);
     }
     show_total_chemapp_errors(1);
     printf("\n\n\n");
 
 	// TODO: debugging stuff
-	exit(0);
+	// exit(0);
 
-    // start iteration without some phases
-    puts("********************************************");
-    puts("   Start calculation without some Phases.");
-    puts("********************************************\n");
+   // changing settings
 
     // setting temperature and pressure
     tqsetc("T", 0, 0, 1000, &numcon, &noerr);
     tqsetc("P", 0, 0, 1, &numcon, &noerr);
 
     // id.do_tqshow = 1;
-    id.eliminate = od.eliminated;
+    id.eliminated_phases = od.eliminated_phases;
     id.do_eliminate = 1;
     id.do_calc_errors = 1;
+    
+     // start iteration without some phases
+    puts("********************************************");
+    puts("   Start calculation without some Phases.");
+    puts("********************************************\n");
+    
+    // print settings
+    print_settings(id, 3, 8);
+    
     error_code = run_iteration(id, &od);
     if(error_code != 0)
     {

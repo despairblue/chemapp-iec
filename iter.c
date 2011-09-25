@@ -15,7 +15,7 @@
 
 #include "math.h"
 
-int check_input(struct iteration_input);
+int check_input(struct iteration_input*);
 void next(int[], int, int, int, int*, int);
 
 // ============================
@@ -23,10 +23,13 @@ void next(int[], int, int, int, int*, int);
 // ============================
 int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
-    int rtn_val = check_input(id);
+    int rtn_val = check_input(&id);
     if (rtn_val) {
         return rtn_val;
     }
+    
+    // TODO: debugging
+    // printf("bla: %li\n", id.ignored_elements);
 
     int t_min = id.t_min;
     int t_max = id.t_max;
@@ -37,10 +40,10 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     LI numcon;
     DB darray2[2];
     LI noerr;
-    int* eliminate = id.eliminate;
+    int* eliminated_phases = id.eliminated_phases;
     int* ignored_elements = id.ignored_elements;
 
-    int now, then, count_all, count_done, sum;
+    int now, then, sum;
     LI nphases, nelements;
 
     // number of elements
@@ -49,7 +52,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     tqnop(&nphases, &noerr);
 
     // will be 1 for all phases not having any amount
-    int *eliminated = malloc(nphases * sizeof(int));
+    int *op_elim_phases = malloc(nphases * sizeof(int));
     
     // containing the initial amounts of the elements
     int *loop = malloc(nelements * sizeof(int));
@@ -71,7 +74,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     // initializing arrays to zero
     for (int i = 0; i < nphases; ++i) {
-        eliminated[i] = 0 ;
+        op_elim_phases[i] = 0 ;
         total_amount[i] = 0;
         amounts[i] = 0;
         total_amount_with_eliminations[i] = 0;
@@ -80,7 +83,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     if (id.do_eliminate == 1) {
-        eliminate_phases(eliminate);
+        eliminate_phases(eliminated_phases);
     }
 
     // current time before iteration
@@ -105,9 +108,6 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                 getchar();
             }
 
-            count_done = 0;
-            count_all = 0;
-
             for (int i = 0; i < nelements; ++i)
             {
                 loop[i] = 0;
@@ -115,14 +115,25 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
             while (loop[0] <= step) {
 
-                sum = 0;
-                
-                for (LI i = 0; i < nelements; ++i)
-                {
-                    sum += loop[i];
-                }
+                sum = sum_array(loop, nelements);
 
                 if (sum == step) {
+                    if ( (id.do_set_ranges == 1) && (check_for_range(loop, id.min_set_ranges, id.max_set_ranges, nelements) == 0) ) {
+                        
+                        /* TODO: debugging */
+                        /*
+                        puts("Omitted:");
+                        for (int d = 0; d < nelements; d++) {
+                            printf("%i ", loop[d]);
+                        }
+                        puts("");
+                        */
+                        
+                        next(loop, nelements, 0, step, ignored_elements, nelements);
+                        
+                        continue;
+                    }
+                
                     // set initial amounts for all phases
                     set_all_ia(loop, step, ignored_elements);
                     
@@ -135,7 +146,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         count_amounts(total_amount);
 
                         if (id.do_eliminate == 0) {
-                            check_elimination(eliminated, margin);
+                            check_elimination(op_elim_phases, margin);
                         }
                     } else {
                         
@@ -151,7 +162,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         // table();
                         // getchar();
                         
-                        eliminate_phases(eliminate);
+                        eliminate_phases(eliminated_phases);
                         darray2[0] = 0.0;
                         tqce(" ", 0, 0, darray2, &noerr);
                         count_amounts(total_amount_with_eliminations);
@@ -221,32 +232,60 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     (*od).time_taken = then - now;
-    (*od).eliminated = eliminated;
+    (*od).eliminated_phases = op_elim_phases;
     (*od).total_errors = total_amount_with_eliminations;
     
     return 0;
 }
 
-int check_input(struct iteration_input id) {
+int check_input(struct iteration_input* id) {
 
-    // if do_ignore_elements is set but ignored_elements[] isn't, retur error code
-    if ( (id.do_ignore_elements == 1) && (id.ignored_elements == 0) ) {
-        return 2;
+    // if do_ignore_elements is set
+    if ( (*id).do_ignore_elements == 1 ) {
+        // but ignored_elements[] isn't, return error code
+        if ( (*id).ignored_elements == 0 ) {
+            return 2;
+        }
+    } else {
+        // ensure that ignored_elements[] is 0
+        (*id).ignored_elements = 0;
     }
     
-    // if do_calc_errors is set but eliminate[] isn't, ...
-    if( ( id.do_calc_errors == 1) && (id.eliminate == 0) ) {
-        return 1;
+    
+    // if do_calc_errors is set
+    if( (*id).do_calc_errors == 1 ) {
+        // but eliminate[] isn't, return error code
+        if ( (*id).eliminated_phases == 0  ) {
+            return 1;
+        }
+    } else {
+        // ensure that eliminate[] is 0
+        (*id).eliminated_phases = 0;
     }
     
-    // if do_eliminate is set but eliminate[] isn't, ...
-    if ( (id.do_eliminate == 1) && (id.eliminate == 0) ) {
-        return 3;
+    
+    // if do_eliminate is set 
+    if ( (*id).do_eliminate == 1 ) {
+        // but eliminate[] isn't, ...
+        if ( (*id).eliminated_phases == 0 ) {
+            return 3;
+        }
+    } else {
+        // ensure that eliminate[] is 0
+        (*id).eliminated_phases = 0;
     }
     
-    // if do_ignore_ranges is set but ignored_ranges[] isn't, ...
-    if ( (id.do_ignore_ranges == 1) && ( (id.min_ignored_ranges == 0) || (id.max_ignored_ranges == 0) ) ) {
-        return 4;
+    
+    // if do_set_ranges is set
+    if ( (*id).do_set_ranges == 1 ) {
+        // but [min/max]_set_ranges[] isn't, ...
+        if ( ( (*id).min_set_ranges == 0 ) || ( (*id).max_set_ranges == 0 ) ) {
+            return 4;
+        }
+    } else {
+        // ensure [min/max]_set_ranges[] is 0
+        (*id).min_set_ranges = 0;
+        (*id).max_set_ranges = 0;
     }
  
     return 0;
@@ -266,7 +305,7 @@ char* error_code_to_str(int error_code) {
             return "Error Code 3: eliminate[] must be set for do_eliminate!";
             break;
         case 4:
-            return "Error Code 4: [min/max]_ignored_ranges[] must be set for do_ignore_ranges!";
+            return "Error Code 4: [min/max]_ignored_ranges[] must be set for do_set_ranges!";
             break;
     }
     
@@ -283,8 +322,15 @@ void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_el
     }
     if ( check_for_ignored_element(pointer, ignored_elements) )
     {
-        // skip element if it should be ignored
-        pointer--;
+        if (pointer == 0) {
+            // if the first element is to be ignored we have to set it
+            // to uppper_bound + 1 to break the while loop in run_iteration()
+            arr[0] = upper_bound + 1;
+            return;
+        } else {
+            // skip element if it should be ignored
+            pointer--;
+        }
     }
     if ((arr[ pointer ] >= upper_bound) && (pointer > 0)) {
         arr[pointer] = lower_bound;
@@ -292,4 +338,85 @@ void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_el
     } else {
         arr[pointer]++;
     }
+}
+
+void print_settings(struct iteration_input id, int nelements, int nphases) {
+
+    puts("**********************");
+    puts("* Iteration Settings *");
+    puts("**********************");
+
+    printf("%-30s%i\n", "Start Temperature:", id.t_min);
+    printf("%-30s%i\n", "Stop Temperature:", id.t_max);
+    printf("%-30s%i\n", "Start Pressure:", id.p_min);
+    printf("%-30s%i\n", "Stop Pressure:", id.p_max);
+    
+    printf("%-30s%i\n", "Step:", id.step);
+    printf("%-30s%lf\n", "Margin:", id.margin);
+    
+    printf("%-30s%i\n", "do_tqshow:", id.do_tqshow);
+    printf("%-30s%i\n", "do_tqcenl:", id.do_tqcenl);
+    printf("%-30s%i\n", "do_table:", id.do_table);
+    printf("%-30s%i\n", "do_eliminate:", id.do_eliminate);
+    
+    printf("%-30s%i\n", "do_ignore_elements:", id.do_ignore_elements);
+    printf("%-30s%i\n", "do_set_ranges:", id.do_set_ranges);
+    printf("%-30s%i\n", "do_test:", id.do_test);
+    
+    printf("%-30s%i\n", "do_calc_errors:", id.do_calc_errors);
+    
+    if (id.eliminated_phases == 0) {
+        printf("%-30s%i\n", "eliminated_phases:", id.eliminated_phases);
+    } else {
+        printf("%-30s", "eliminated_phases:");
+        
+        for (int i = 0; i < nphases; i++) {
+            printf("%i ", id.eliminated_phases[i]);
+        }
+        
+        
+        printf("\n");
+    }
+    
+    if (id.ignored_elements == 0) {
+        printf("%-30s%i\n", "ignored_elements:", id.ignored_elements);
+    } else {
+        printf("%-30s", "ignored_elements:");
+        
+        for (int i = 0; i < nelements; i++) {
+            printf("%i ", id.ignored_elements[i]);
+        }
+        
+        
+        printf("\n");
+    }
+    
+    if (id.min_set_ranges == 0) {
+        printf("%-30s%i\n", "min_set_ranges:", id.min_set_ranges);
+    } else {
+        printf("%-30s", "min_set_ranges:");
+        
+        for (int i = 0; i < nelements; i++) {
+            printf("%i ", id.min_set_ranges[i]);
+        }
+        
+        
+        printf("\n");
+    }
+    
+    if (id.max_set_ranges == 0) {
+        printf("%-30s%i\n", "max_set_ranges:", id.max_set_ranges);
+    } else {
+        printf("%-30s", "max_set_ranges:");
+        
+        for (int i = 0; i < nelements; i++) {
+            printf("%i ", id.max_set_ranges[i]);
+        }
+        
+        
+        printf("\n");
+    }
+    
+    printf("\n\n\n");
+    
 }
