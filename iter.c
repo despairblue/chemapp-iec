@@ -342,6 +342,9 @@ void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_el
 
 void print_settings(struct iteration_input id, int nelements, int nphases) {
 
+    // clean settings from igored input (especially the arrays)
+    check_input(&id);
+
     puts("**********************");
     puts("* Iteration Settings *");
     puts("**********************");

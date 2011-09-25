@@ -21,9 +21,9 @@ int main ()
     	Variable Declarations
     */
 
-    LI   lint,               // all-purpose integer variable
+    LI   nelements,               // all-purpose integer variable
      noerr,              // error code return variable
-     nphase,             // number of phases in the loaded data-file
+     nphases,             // number of phases in the loaded data-file
      numcon,             // index of a condition set
      unitno;             // FORTRAN unit number of the data-files
      
@@ -46,9 +46,9 @@ int main ()
     tqgio("FILE", &unitno, &noerr);
 
     // Open data-file for reading
-    // tqopna("data/pitzer.dat", unitno, &noerr);
+    tqopna("data/pitzer.dat", unitno, &noerr);
     // tqopna("femgsio4.dat", unitno, &noerr);
-    tqopna("data/cosi.dat", unitno, &noerr);
+    // tqopna("data/cosi.dat", unitno, &noerr);
     // tqopnt("data/Test.cst",10,&noerr);
 
     // Read data-file
@@ -64,10 +64,10 @@ int main ()
     if (noerr) abortprog(__LINE__,"tqclos",noerr, __FILE__);
 
     // get number of phases
-    tqnop(&nphase, &noerr);
-    printf("Number of phases: %i\n", nphase);
-    tqnosc(&lint,&noerr);
-    printf("Number of elements: %i\n", lint);
+    tqnop(&nphases, &noerr);
+    printf("Number of phases: %i\n", nphases);
+    tqnosc(&nelements,&noerr);
+    printf("Number of elements: %i\n", nelements);
     tqcsu("Amount", "gram", &noerr);
     //tqcsu("Amount", "mol", &noerr);
     tqshow(&noerr);
@@ -88,8 +88,8 @@ int main ()
     id.max_set_ranges = max_set_ran;
     
     id.do_ignore_elements = 1;
-    // int test[] = {1,1,1,1,1,0};
-    int test[] = {0,1,1};
+    int test[] = {1,1,1,1,1,0};
+    // int test[] = {1,1,0};
     id.ignored_elements = test;
     // id.do_eliminate = 1;
     // id.eliminate = test;
@@ -104,7 +104,7 @@ int main ()
     puts("******************************************\n");
 
     // print settings
-    print_settings(id, 3, 8);
+    print_settings(id, nelements, nphases);
 
     // run iteration with the parameters set in id
     error_code = run_iteration(id, &od);
@@ -116,8 +116,8 @@ int main ()
 
     printf("\nTime: %i\n___________________________\n\n", od.time_taken);
 
-    puts("\nPhases that that can't be eliminated are marked with a 1:");
-    for (int i = 0; i < nphase; ++i)
+    puts("Phases that that can't be eliminated are marked with a 1:");
+    for (int i = 0; i < nphases; ++i)
     {
         printf("%d: %d\n", i+1, od.eliminated_phases[i]);
     }
@@ -125,9 +125,9 @@ int main ()
     printf("\n\n\n");
 
 	// TODO: debugging stuff
-	// exit(0);
+	exit(0);
 
-   // changing settings
+    // changing settings
 
     // setting temperature and pressure
     tqsetc("T", 0, 0, 1000, &numcon, &noerr);
@@ -144,7 +144,7 @@ int main ()
     puts("********************************************\n");
     
     // print settings
-    print_settings(id, 3, 8);
+    print_settings(id, nelements, nphases);
     
     error_code = run_iteration(id, &od);
     if(error_code != 0)
