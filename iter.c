@@ -18,9 +18,10 @@
 int check_input(struct iteration_input*);
 void next(int[], int, int, int, int*, int);
 
-// ============================
-// = May return an error code =
-// ============================
+// ========================================
+// = Runs Iterations with the given input =
+// = May return an error code             =
+// ========================================
 int run_iteration(struct iteration_input id, struct iteration_output* od) {
 
     int rtn_val = check_input(&id);
@@ -28,7 +29,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
         return rtn_val;
     }
 
-    // TODO: debugging
+    /* TODO: debugging */
     // printf("bla: %li\n", id.ignored_elements);
 
     int t_min = id.t_min;
@@ -46,33 +47,33 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     int now, then, sum;
     LI nphases, nelements;
 
-    // number of elements
+    /* number of elements */
     tqnosc(&nelements,&noerr);
-    // number of phases
+    /* number of phases */
     tqnop(&nphases, &noerr);
 
-    // will be 1 for all phases not having any amount
+    /* will be 1 for all phases not having any amount */
     int *op_elim_phases = malloc(nphases * sizeof(int));
 
-    // containing the initial amounts of the elements
+    /* containing the initial amounts of the elements */
     int *loop = malloc(nelements * sizeof(int));
 
-    // will contain the total amount of any phase
+    /* will contain the total amount of any phase */
     DB *total_amount = malloc(nphases * sizeof(DB));
 
-    // will contain the amounts for that state
+    /* will contain the amounts for that state */
     DB *amounts = malloc(nphases * sizeof(DB));
 
-    // will contain the amounts for that state with the eliminated phases
+    /* will contain the amounts for that state with the eliminated phases */
     DB *amounts_with_eliminations = malloc(nphases * sizeof(DB));
 
-    // will contain the total amount of any phase for the equilibrium with eliminated phases
+    /* will contain the total amount of any phase for the equilibrium with eliminated phases */
     DB *total_amount_with_eliminations = malloc(nphases * sizeof(DB));
 
-    // will contain the biggest error a phase had
+    /* will contain the biggest error a phase had */
     DB *biggest_error = malloc(nphases * sizeof(DB));
 
-    // initializing arrays to zero
+    /* initializing arrays to zero */
     for (int i = 0; i < nphases; ++i) {
         op_elim_phases[i] = 0 ;
         total_amount[i] = 0;
@@ -86,7 +87,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
         eliminate_phases(eliminated_phases);
     }
 
-    // current time before iteration
+    /* current time before iteration */
     now = time(NULL);
 
     for (int i = t_min; i <= t_max; ++i)
@@ -97,14 +98,14 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
         {
             tqsetc("P", 0, 0, j, &numcon, &noerr);
 
-            // Display present settings if do_tqshow == 1
+            /* Display present settings if do_tqshow == 1 */
             if (id.do_tqshow == 1) {
                 printf("\n\n**** Begin output table produced by tqshow\n");
                 fflush(NULL);
                 tqshow(&noerr);
                 fflush(NULL);
                 printf("\n**** End output table produced by tqshow\n\n\n");
-                // wait for enter to continue
+                /* wait for enter to continue */
                 getchar();
             }
 
@@ -134,7 +135,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         continue;
                     }
 
-                    // set initial amounts for all phases
+                    /* set initial amounts for all phases */
                     set_all_ia(loop, step, ignored_elements);
 
                     if (id.do_calc_errors == 0)
@@ -155,9 +156,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         tqce(" ", 0, 0, darray2, &noerr);
                         count_amounts(total_amount);
                         get_amounts(amounts);
-                        /*
-                            TODO remove, only for debugging
-                        */
+                        /* TODO remove, only for debugging */
                         // tqshow(&noerr);
                         // table();
                         // getchar();
@@ -167,9 +166,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                         tqce(" ", 0, 0, darray2, &noerr);
                         count_amounts(total_amount_with_eliminations);
                         get_amounts(amounts_with_eliminations);
-                        /*
-                            TODO remove, only for debugging
-                        */
+                        /* TODO remove, only for debugging */
                         // tqshow(&noerr);
                         // table();
                         // getchar();
@@ -182,9 +179,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
                             {
                                 printf("%d: %14.5f\n", i, calc_error(amounts[i], amounts_with_eliminations[i]));
                             }
-                            /*
-                                TODO remove, only for debugging
-                            */
+                            /* TODO remove, only for debugging */
                             // getchar();
                         }
                     }
@@ -195,7 +190,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
         }
     }
 
-    // current time after iteration
+    /* current time after iteration */
     then = time(NULL);
 
     show_amounts(total_amount);
@@ -217,7 +212,7 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
         show_amounts(biggest_error);
     }
 
-    // Print ChemSage output table
+    /* Print ChemSage output table */
     if (id.do_tqcenl == 1) {
         printf("\n\n**** Begin output table produced by tqcenl\n");
         fflush(NULL);
@@ -238,54 +233,58 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     return 0;
 }
 
+
+// =================================================================================
+// = Checks the input array and returns an error code if it detects anything funny =
+// =================================================================================
 int check_input(struct iteration_input* id) {
     LI nelements, noerr;
     
     tqnosc(&nelements,&noerr);
 
-    // if do_ignore_elements is set
+    /* if do_ignore_elements is set */
     if ( (*id).do_ignore_elements == 1 ) {
-        // but ignored_elements[] isn't, return error code
+        /* but ignored_elements[] isn't, return error code */
         if ( (*id).ignored_elements == 0 ) {
             return 2;
         }
     } else {
-        // ensure that ignored_elements[] is 0
+        /* ensure that ignored_elements[] is 0 */
         (*id).ignored_elements = 0;
     }
 
 
-    // if do_calc_errors is set
+    /* if do_calc_errors is set */
     if( (*id).do_calc_errors == 1 ) {
-        // but eliminate[] isn't, return error code
+        /* but eliminate[] isn't, return error code */
         if ( (*id).eliminated_phases == 0  ) {
             return 1;
         }
     } else {
-        // ensure that eliminate[] is 0
+        /* ensure that eliminate[] is 0 */
         (*id).eliminated_phases = 0;
     }
 
 
-    // if do_eliminate is set
+    /* if do_eliminate is set */
     if ( (*id).do_eliminate == 1 ) {
-        // but eliminate[] isn't, ...
+        /* but eliminate[] isn't, ... */
         if ( (*id).eliminated_phases == 0 ) {
             return 3;
         }
     } else {
-        // ensure that eliminate[] is 0
+        /* ensure that eliminate[] is 0 */
         (*id).eliminated_phases = 0;
     }
 
 
-    // if do_set_ranges is set
+    /* if do_set_ranges is set */
     if ( (*id).do_set_ranges == 1 ) {
-        // but [min/max]_set_ranges[] isn't, ...
+        /* but [min/max]_set_ranges[] isn't, ... */
         if ( ( (*id).min_set_ranges == 0 ) || ( (*id).max_set_ranges == 0 ) ) {
             return 4;
         }
-        // check if all min ranges are below or equal to max ranges
+        /* check if all min ranges are below or equal to max ranges */
         for (int i = 0; i < nelements; i++) {
             if ((*id).min_set_ranges[i] > (*id).max_set_ranges[i]) {
                 return 5;
@@ -293,7 +292,7 @@ int check_input(struct iteration_input* id) {
         }
         
     } else {
-        // ensure [min/max]_set_ranges[] is 0
+        /* ensure [min/max]_set_ranges[] is 0 */
         (*id).min_set_ranges = 0;
         (*id).max_set_ranges = 0;
     }
@@ -302,6 +301,9 @@ int check_input(struct iteration_input* id) {
 
 }
 
+// =======================================================
+// = Returns a string that explains the given error code =
+// =======================================================
 char* error_code_to_str(int error_code) {
 
     switch (error_code) {
@@ -326,6 +328,9 @@ char* error_code_to_str(int error_code) {
 
 }
 
+// ============================================================================
+// = Returns the next distribution for an equilibrium skipping ignored phases =
+// ============================================================================
 void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_elements, int nelements) {
     int pointer = size - 1;
 
@@ -336,12 +341,12 @@ void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_el
     if ( check_for_ignored_element(pointer, ignored_elements) )
     {
         if (pointer == 0) {
-            // if the first element is to be ignored we have to set it
-            // to uppper_bound + 1 to break the while loop in run_iteration()
+            /* if the first element is to be ignored we have to set it        */
+            /* to uppper_bound + 1 to break the while loop in run_iteration() */
             arr[0] = upper_bound + 1;
             return;
         } else {
-            // skip element if it should be ignored
+            /* skip element if it should be ignored */
             pointer--;
         }
     }
@@ -353,9 +358,12 @@ void next(int arr[], int size, int lower_bound, int upper_bound, int* ignored_el
     }
 }
 
+// ==============================================
+// = Prints the settings set in iteration_input =
+// ==============================================
 void print_settings(struct iteration_input id, int nelements, int nphases) {
 
-    // clean settings from igored input (especially the arrays)
+    /* clean settings from ignored input (especially the arrays) */
     check_input(&id);
 
     puts("**********************");
