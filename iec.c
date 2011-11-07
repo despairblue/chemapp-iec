@@ -26,8 +26,8 @@ int main ()
      nphases,             // number of phases in the loaded data-file
      numcon,             // index of a condition set
      unitno;             // FORTRAN unit number of the data-files
-     
-    int error_code; 
+
+    int error_code;
 
     char *dstrptr;           // pointer to a string
 
@@ -86,7 +86,7 @@ int main ()
     int max_set_ran[] = {10, 10, 10};
     id.min_set_ranges = min_set_ran;
     id.max_set_ranges = max_set_ran;
-    
+
     id.do_ignore_elements = 1;
     int test[] = {1,1,1,1,1,0};
     // int test[] = {1,1,0};
@@ -124,8 +124,8 @@ int main ()
     show_total_chemapp_errors(1);
     printf("\n\n\n");
 
-	// TODO: debugging stuff
-	exit(0);
+    // TODO: debugging stuff
+    exit(0);
 
     // changing settings
 
@@ -136,16 +136,16 @@ int main ()
     // id.do_tqshow = 1;
     id.eliminated_phases = od.eliminated_phases;
     id.do_eliminate = 1;
-    id.do_calc_errors = 1;
-    
-     // start iteration without some phases
+    id.do_calc_errors = 0;
+
+    // start iteration without some phases
     puts("********************************************");
     puts("   Start calculation without some Phases.");
     puts("********************************************\n");
-    
+
     // print settings
     print_settings(id, nelements, nphases);
-    
+
     error_code = run_iteration(id, &od);
     if(error_code != 0)
     {
