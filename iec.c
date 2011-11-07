@@ -74,7 +74,7 @@ int main ()
     // id.margin = 0.999;
 
     id.do_set_ranges = 1;
-    int min_set_ran[] = {5, 6, 5, 5, 5, 0};
+    int min_set_ran[] = {5, 5, 5, 5, 5, 0};
     int max_set_ran[] = {5, 5, 5, 5, 5, 10};
     id.min_set_ranges = min_set_ran;
     id.max_set_ranges = max_set_ran;
@@ -115,9 +115,6 @@ int main ()
     }
     show_total_chemapp_errors(1);
     printf("\n\n\n");
-
-    /* TODO: debugging stuff */
-    exit(0);
 
     /* changing settings */
 

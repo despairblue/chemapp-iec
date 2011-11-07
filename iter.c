@@ -227,6 +227,11 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
     }
 
     (*od).time_taken = then - now;
+    /* TODO: debug */
+    for (int i = 0; i < nphases; i++) {
+        printf("%i: %i  ", i, op_elim_phases[i]);
+    }
+    
     (*od).eliminated_phases = op_elim_phases;
     (*od).total_errors = total_amount_with_eliminations;
 
@@ -256,24 +261,28 @@ int check_input(struct iteration_input* id) {
 
     /* if do_calc_errors is set */
     if( (*id).do_calc_errors == 1 ) {
-        /* but eliminate[] isn't, return error code */
+        /* but eliminated_phases[] isn't, return error code */
         if ( (*id).eliminated_phases == 0  ) {
             return 1;
+        } else {
+            /* ensure that eliminated_phases[] is 0 */
+            (*id).eliminated_phases = 0;
         }
-    } else {
-        /* ensure that eliminate[] is 0 */
-        (*id).eliminated_phases = 0;
     }
 
 
     /* if do_eliminate is set */
     if ( (*id).do_eliminate == 1 ) {
-        /* but eliminate[] isn't, ... */
+        /* but eliminated_phases[] isn't, ... */
         if ( (*id).eliminated_phases == 0 ) {
+            /* TODO: debug */
+            for (int i = 0; i < 6; i++) {
+               printf("%i: %i  ", i, (*id).eliminated_phases[i]);
+            }
             return 3;
         }
     } else {
-        /* ensure that eliminate[] is 0 */
+        /* ensure that eliminated_phases[] is 0 */
         (*id).eliminated_phases = 0;
     }
 
@@ -308,7 +317,7 @@ char* error_code_to_str(int error_code) {
 
     switch (error_code) {
     case 1:
-        return "Error Code 1: eliminate[] must be set for do_calc_errors!";
+        return "Error Code 1: eliminated_phases[] must be set for do_calc_errors!";
         break;
     case 2:
         return "Error Code 2: ignored_elements[] must be set for do_ignore_elements!";
