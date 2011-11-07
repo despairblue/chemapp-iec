@@ -17,53 +17,45 @@
 
 int main ()
 {
-    /*
-    	Variable Declarations
-    */
-
-    LI   nelements,               // all-purpose integer variable
-     noerr,              // error code return variable
-     nphases,             // number of phases in the loaded data-file
-     numcon,             // index of a condition set
-     unitno;             // FORTRAN unit number of the data-files
+    /* Variable Declarations */
+    LI   nelements,     // all-purpose integer variable
+     noerr,             // error code return variable
+     nphases,           // number of phases in the loaded data-file
+     numcon,            // index of a condition set
+     unitno;            // FORTRAN unit number of the data-files
 
     int error_code;
 
-    char *dstrptr;           // pointer to a string
+    char *dstrptr;      // pointer to a string
 
-    /*
-    	Initializing and Stuff
-    */
-
-    // printf("\nProgram for accelerating the equilibrium calculations\n\n");
-
+    /* Initializing and Stuff */
     dstrptr = malloc(TQSTRLEN);
 
-    // Initialise ChemApp
+    /* Initialise ChemApp */
     tqini(&noerr);
 
-    // Getting the FORTRAN unit for the data-file
+    /* Getting the FORTRAN unit for the data-file */
     tqgio("FILE", &unitno, &noerr);
 
-    // Open data-file for reading
+    /* Open data-file for reading */
     tqopna("data/pitzer.dat", unitno, &noerr);
     // tqopna("femgsio4.dat", unitno, &noerr);
     // tqopna("data/cosi.dat", unitno, &noerr);
     // tqopnt("data/Test.cst",10,&noerr);
 
-    // Read data-file
+    /* Read data-file */
     tqrfil(&noerr);
     if (noerr) abortprog(__LINE__,"tqfil",noerr, __FILE__);
 
-    // Read cst-file
+    /* Read cst-file */
     // tqrcst(&noerr);
     // if (noerr) abortprog(__LINE__,"tqrcst",noerr, __FILE__);
 
-    // Close file
+    /* Close file */
     tqclos(unitno, &noerr);
     if (noerr) abortprog(__LINE__,"tqclos",noerr, __FILE__);
 
-    // get number of phases
+    /* get number of phases */
     tqnop(&nphases, &noerr);
     printf("Number of phases: %i\n", nphases);
     tqnosc(&nelements,&noerr);
@@ -72,7 +64,7 @@ int main ()
     //tqcsu("Amount", "mol", &noerr);
     tqshow(&noerr);
 
-    // input struct for the iteration
+    /* input struct for the iteration */
     struct iteration_input id = ITERATION_INPUT_DEFAULT;
     id.t_min = 1000;
     id.t_max = 1010;
@@ -95,18 +87,18 @@ int main ()
     // id.eliminate = test;
     // id.do_calc_errors = 1;
 
-    // output struct for the iteration
+    /* output struct for the iteration */
     struct iteration_output od = ITERATION_OUTPUT_DEFAULT;
 
-    // start iteration with all components
+    /* start iteration with all components */
     puts("******************************************");
     puts("* Start calculation with all components. *");
     puts("******************************************\n");
 
-    // print settings
+    /* print settings */
     print_settings(id, nelements, nphases);
 
-    // run iteration with the parameters set in id
+    /* run iteration with the parameters set in id */
     error_code = run_iteration(id, &od);
     if(error_code != 0)
     {
@@ -124,12 +116,12 @@ int main ()
     show_total_chemapp_errors(1);
     printf("\n\n\n");
 
-    // TODO: debugging stuff
+    /* TODO: debugging stuff */
     exit(0);
 
-    // changing settings
+    /* changing settings */
 
-    // setting temperature and pressure
+    /* setting temperature and pressure */
     tqsetc("T", 0, 0, 1000, &numcon, &noerr);
     tqsetc("P", 0, 0, 1, &numcon, &noerr);
 
@@ -138,12 +130,12 @@ int main ()
     id.do_eliminate = 1;
     id.do_calc_errors = 0;
 
-    // start iteration without some phases
+    /* start iteration without some phases */
     puts("********************************************");
     puts("   Start calculation without some Phases.");
     puts("********************************************\n");
 
-    // print settings
+    /* print settings */
     print_settings(id, nelements, nphases);
 
     error_code = run_iteration(id, &od);
