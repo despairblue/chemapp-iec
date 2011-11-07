@@ -12,20 +12,17 @@
 #include "math.h"
 #include <stdlib.h>
 
-// =============
-// = abortprog =
-// =============
-/*
-	Reports the error number and the routine it occurred in before it exits
-	Though i don't use it.
-*/
+// ===========================================================================
+// = Reports the error number and the routine it occurred in before it exits =
+// ===========================================================================
 void abortprog(int lineno, char sr_name[10], LI error_no, char* file) {
     LI noerr;
     char answer;
-    // -1 for not asked, 0 for not silent, 1 for silent
+    
+    /* -1 for not asked, 0 for not silent, 1 for silent */
     static int silent = -1;
 
-    // count total errors
+    /* count total errors */
     show_total_chemapp_errors(0);
 
     if (silent == -1) {
@@ -54,6 +51,10 @@ void abortprog(int lineno, char sr_name[10], LI error_no, char* file) {
     }
 }
 
+// =====================================================================
+// = Counts all calls to abortprog                                     =
+// = If (show_them == 1) it will print them, otherwise it stays silent =
+// =====================================================================
 int show_total_chemapp_errors (int show_them) {
 
     static int count = 0;
@@ -68,8 +69,10 @@ int show_total_chemapp_errors (int show_them) {
 
 }
 
+// ===========================================================
+// = Prints a table with all phase name, amount and activity =
+// ===========================================================
 void table() {
-
 
     LI i, noerr, nphase;
     DB amount, act;
@@ -109,8 +112,9 @@ void table() {
     }
 }
 
-//DB calc_error(int phase)
-
+// =================================================================================
+// = Takes an array as arguments, each phase which (index == 0) will be eliminated =
+// =================================================================================
 void eliminate_phases(int eliminate[]) {
 
     LI noerr, nphases;
@@ -129,7 +133,10 @@ void eliminate_phases(int eliminate[]) {
 
 }
 
-
+// ==========================================================================================
+// = Checks which phases could be eliminated in the current equilibrium                     =
+// = margin is the offset from zero which is still thought to be low enough for elimination =
+// ==========================================================================================
 void check_elimination(int eliminated[], double margin) {
 
     LI i, noerr, nphase;
@@ -168,26 +175,14 @@ void check_elimination(int eliminated[], double margin) {
     }
 }
 
+// ===========================================================
+// = Returns the error which was causes by elimating a phase =
+// ===========================================================
 DB calc_error(DB amounts, DB amounts_with_eliminations) {
-
 
     DB error;
 
-    /*
-        TODO remove, only for debugging
-    */
-    // show_amounts(amounts);
-    // show_amounts(amounts_with_eliminations);
-    // show_amounts(biggest_error_so_far);
-    // getchar();
-
     error = fabs((amounts - amounts_with_eliminations)) / amounts;
-
-    /*
-        TODO remove, only for debugging
-    */
-    // printf("|(%f - %f)| / %f = %f\n", amounts, amounts_with_eliminations, amounts, error);
-    // getchar();
 
     return error;
 }
@@ -223,16 +218,13 @@ int biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest_
     return retval;
 }
 
+// ==================================================
+// = Retrieve the equilibrium amounts of all phases =
+// ==================================================
 void get_amounts(DB amounts[]) {
-
 
     LI noerr, nphase;
     DB amount;
-
-
-    /* Retrieve and display the equilibrium
-       amounts of all phases */
-
 
     /* Get number of phases */
     tqnop(&nphase, &noerr);
@@ -246,18 +238,13 @@ void get_amounts(DB amounts[]) {
     }
 }
 
-
-
+// ===================================================================
+// = Adds up the current amounts in the equilibrium to total_amounts =
+// ===================================================================
 void count_amounts(DB total_amount[]) {
-
 
     LI noerr, nphase;
     DB amount, act;
-
-
-    /* Retrieve and display the activities and equilibrium
-       amounts of all phases */
-
 
     /* Get number of phases */
     tqnop(&nphase, &noerr);
@@ -275,14 +262,13 @@ void count_amounts(DB total_amount[]) {
     }
 }
 
+// =====================================================
+// = Prints the total amount for all phases in a table =
+// =====================================================
 void show_amounts(DB total_amount[]) {
 
     LI noerr, nphase;
     char name[TQSTRLEN];
-
-
-    /* Retrieve and display the activities and equilibrium
-       amounts of all phases */
 
     printf("%-27s%-16s\n", "Phase name", "total amount");
 
@@ -303,15 +289,12 @@ void show_amounts(DB total_amount[]) {
 
 }
 
+// =====================
+// = Enters all phases =
+// =====================
 void enter_all_phases() {
 
-
     LI i, noerr, nphase;
-
-
-    /* Retrieve and display the activities and equilibrium
-       amounts of all phases */
-
 
     /* Get number of phases */
     tqnop(&nphase, &noerr);
@@ -324,6 +307,9 @@ void enter_all_phases() {
 
 }
 
+// ========================
+// = Resets all vars to 0 =
+// ========================
 void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
     *a = 0;
     *b = 0;
@@ -333,6 +319,9 @@ void reset_vars(DB *a, DB *b, DB *c, DB *d, DB *e, DB *f) {
     *f = 0;
 }
 
+// ==========================================
+// = Sets the initial amount for all phases =
+// ==========================================
 void set_all_ia(int arr[], int step, int* ignored_elements) {
     LI numcon, noerr, nelements;
 
@@ -341,9 +330,6 @@ void set_all_ia(int arr[], int step, int* ignored_elements) {
 
     for (int i = 1; i <= nelements; i++)
     {
-        // TODO: debugging
-        // printf("%i: %f\n", arr[i-1], ((DB)arr[i-1]) / step);
-
         if( check_for_ignored_element(i-1, ignored_elements) == 0 ) {
             tqsetc("ia", 0, i, ((DB)arr[i-1]) / step, &numcon, &noerr);
             if (noerr) abortprog(__LINE__,"tqsetc",noerr, __FILE__);
@@ -351,6 +337,9 @@ void set_all_ia(int arr[], int step, int* ignored_elements) {
     }
 }
 
+// ==============================================
+// = Returns 1 if the element should be ignored =
+// ==============================================
 int check_for_ignored_element(int element, int* ignored_elements) {
     if ( ((long int)ignored_elements) != 0 ) {
         if (ignored_elements[element] == 0) {
@@ -362,6 +351,9 @@ int check_for_ignored_element(int element, int* ignored_elements) {
 
 }
 
+// ========================================
+// = Sums up an array and returns the sum =
+// ========================================
 int sum_array(int arr[], int n) {
     int sum = 0;
 
