@@ -239,6 +239,9 @@ int run_iteration(struct iteration_input id, struct iteration_output* od) {
 }
 
 int check_input(struct iteration_input* id) {
+    LI nelements, noerr;
+    
+    tqnosc(&nelements,&noerr);
 
     // if do_ignore_elements is set
     if ( (*id).do_ignore_elements == 1 ) {
@@ -282,6 +285,13 @@ int check_input(struct iteration_input* id) {
         if ( ( (*id).min_set_ranges == 0 ) || ( (*id).max_set_ranges == 0 ) ) {
             return 4;
         }
+        // check if all min ranges are below or equal to max ranges
+        for (int i = 0; i < nelements; i++) {
+            if ((*id).min_set_ranges[i] > (*id).max_set_ranges[i]) {
+                return 5;
+            }
+        }
+        
     } else {
         // ensure [min/max]_set_ranges[] is 0
         (*id).min_set_ranges = 0;
@@ -306,6 +316,9 @@ char* error_code_to_str(int error_code) {
         break;
     case 4:
         return "Error Code 4: [min/max]_ignored_ranges[] must be set for do_set_ranges!";
+        break;
+    case 5:
+        return "Error Code 5: [min/max]_ranges do not match. min ranges must be smaller of equal to max ranges";
         break;
     }
 

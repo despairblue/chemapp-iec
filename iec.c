@@ -81,13 +81,13 @@ int main ()
 
     // id.margin = 0.999;
 
-    // id.do_set_ranges = 1;
-    int min_set_ran[] = {0, 0, 0};
-    int max_set_ran[] = {10, 10, 10};
+    id.do_set_ranges = 1;
+    int min_set_ran[] = {5, 6, 5, 5, 5, 0};
+    int max_set_ran[] = {5, 5, 5, 5, 5, 10};
     id.min_set_ranges = min_set_ran;
     id.max_set_ranges = max_set_ran;
 
-    id.do_ignore_elements = 1;
+    // id.do_ignore_elements = 1;
     int test[] = {1,1,1,1,1,0};
     // int test[] = {1,1,0};
     id.ignored_elements = test;
