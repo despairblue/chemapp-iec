@@ -175,9 +175,9 @@ void check_elimination(int eliminated[], double margin) {
     }
 }
 
-// ===========================================================
-// = Returns the error which was causes by elimating a phase =
-// ===========================================================
+// =============================================================
+// = Returns the error which was causes by eliminating a phase =
+// =============================================================
 DB calc_error(DB amounts, DB amounts_with_eliminations) {
 
     DB error;
@@ -218,9 +218,9 @@ int biggest_error_calc(DB amounts[], DB amounts_with_eliminations[], DB biggest_
     return retval;
 }
 
-// ==================================================
-// = Retrieve the equilibrium amounts of all phases =
-// ==================================================
+// ===================================================
+// = Retrieves the equilibrium amounts of all phases =
+// ===================================================
 void get_amounts(DB amounts[]) {
 
     LI noerr, nphase;
@@ -365,9 +365,9 @@ int sum_array(int arr[], int n) {
     return sum;
 }
 
-// ================================================
-// = Returns 0 if out any element is out of range =
-// ================================================
+// ============================================
+// = Returns 0 if any element is out of range =
+// ============================================
 int check_for_range(int arr[], int min_set_ranges[], int max_set_ranges[], int nelements) {
     for (int i = 0; i < nelements; i++) {
         if ( (arr[i] < min_set_ranges[i]) || (arr[i] > max_set_ranges[i]) ) {

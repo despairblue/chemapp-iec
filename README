@@ -9,14 +9,14 @@
 ***********************
 * Functions in iter.c *
 ***********************
-int run_iteration(struct iteration_input, struct iteration_output*)
+int run_iteration( struct iteration_input, struct iteration_output* )
 	* parameters are self explaining
 	* return value is an error code which explains what is wrong with the iteration_input (see error_code_to_str())
 	
-char* error_code_to_str(int error_code)
+char* error_code_to_str( int error_code )
     * turns an errror code given by run_iteration into a hopefully helpfull error message
     
-void print_settings(struct iteration_input, int nelements, int nphases)
+void print_settings( struct iteration_input, int nelements, int nphases )
     * prints a table with the options set in iteration_input
     * nelements = number of elements
     * nphases = number of phases
@@ -24,34 +24,62 @@ void print_settings(struct iteration_input, int nelements, int nphases)
 **************************
 * Functions in helpers.c *
 **************************
-void abortprog( int, char[10], LI, char*)
+void abortprog( int line_number, char instruction_name[10], LI error_number, char* filename )
+    * may be called after a ChemApp instruction
+    * prints the ChemApp error number, what instruction caused it, in what line and what file the instruction is
 
-int show_total_chemapp_errors(int)
+int show_total_chemapp_errors( int show_them )
+    * returns the total of ChemApp errors that occurred
+    * if show_them is 0 it will print nothing and increase the error count
+    * if show_them is not 0, it will print them
 
 void table()
+    * prints a table with all phase name, amount and activity
 
-void check_elimination(int[], double)
+void check_elimination( int eliminated[], double margin )
+    * checks which phases could be eliminated in the current equilibrium
+    * margin is the offset from zero which is still thought to be low enough for elimination
 
-DB calc_error(DB, DB)
+DB calc_error( DB amounts, DB amounts_with_eliminations )
+    * returns the error which was causes by eliminating a phase
 
-int biggest_error_calc(DB[] , DB[] , DB[])
+int biggest_error_calc( DB amounts[], DB amounts_with_eliminations[], DB biggest_error_so_far[] )
+    * returns 1 if there is an error otherwhise 0
+    * amounts = amounts of all phases without elimination
+    * amounts_with_eliminations = amounts of all phases with elimination
+    * biggest_error_so_far = before first call all set to 0, in subsequent the biggest error for 
+        a phases will be saved there
 
-void get_amounts(DB[])
+void get_amounts( DB amounts[] )
+    * retrieves the equilibrium amounts of all phases
 
-void count_amounts(DB[])
+void count_amounts( DB total_amount[] )
+    * adds up the current amounts in the equilibrium to total_amounts
 
-void show_amounts(DB[])
+void show_amounts( DB total_amount[] )
+    * prints the total amount for all phases in a table
 
 void enter_all_phases()
+    * enters all phases
 
-void reset_vars(DB*, DB*, DB*, DB*, DB*, DB*)
+void reset_vars( DB *a, DB *b, DB *c, DB *d, DB *e, DB *f )
+    * resets all vars to 0
 
-void set_all_ia(int[], int, int*)
+void set_all_ia( int arr[], int step, int* ignored_elements )
+    * sets the initial amount for all phases
+    * will not set for ignored elements
+    * step: initial amount is set in iteration_input as an integer
+        step says by what it must be diveded to be the correct double value for initial amount
+        preset is 10
 
-void eliminate_phases(int[])
+void eliminate_phases( int eliminate[] )
+    * takes an array as arguments, each phase with (index == 0) will be eliminated
+    
+int check_for_ignored_element( int element, int* ignored_elements )
+    * returns 1 if the element should be ignored
 
-int check_for_ignored_element(int, int*)
+int sum_array( int arr[], int n )
+    * sums up an array and returns the sum
 
-int sum_array(int[], int)
-
-int check_for_range(int[], int[], int[], int)
+int check_for_range( int arr[], int min_set_ranges[], int max_set_ranges[], int nelements )
+    * returns 0 if any element is out of range
