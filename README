@@ -1,0 +1,57 @@
+*********
+* Usage *
+*********
+1. ChemApp has to be initalized.
+2. A data file has to be read.
+3. An iteration_input struct and an iteration_output has to be initialized (Explanation for the fields are given in iter.h).
+4. run_iteration can be called.
+
+***********************
+* Functions in iter.c *
+***********************
+int run_iteration(struct iteration_input, struct iteration_output*)
+	* parameters are self explaining
+	* return value is an error code which explains what is wrong with the iteration_input (see error_code_to_str())
+	
+char* error_code_to_str(int error_code)
+    * turns an errror code given by run_iteration into a hopefully helpfull error message
+    
+void print_settings(struct iteration_input, int nelements, int nphases)
+    * prints a table with the options set in iteration_input
+    * nelements = number of elements
+    * nphases = number of phases
+
+**************************
+* Functions in helpers.c *
+**************************
+void abortprog( int, char[10], LI, char*)
+
+int show_total_chemapp_errors(int)
+
+void table()
+
+void check_elimination(int[], double)
+
+DB calc_error(DB, DB)
+
+int biggest_error_calc(DB[] , DB[] , DB[])
+
+void get_amounts(DB[])
+
+void count_amounts(DB[])
+
+void show_amounts(DB[])
+
+void enter_all_phases()
+
+void reset_vars(DB*, DB*, DB*, DB*, DB*, DB*)
+
+void set_all_ia(int[], int, int*)
+
+void eliminate_phases(int[])
+
+int check_for_ignored_element(int, int*)
+
+int sum_array(int[], int)
+
+int check_for_range(int[], int[], int[], int)
